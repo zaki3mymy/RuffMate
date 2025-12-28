@@ -5,22 +5,23 @@
 ### システム全体構成
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Browser Client (SPA)                     │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌───────────────┐  ┌────────────────┐  ┌──────────────────┐   │
-│  │   UI Layer    │  │  State Layer   │  │   Data Layer     │   │
-│  │  (React +     │◄─┤  (Zustand)     │◄─┤  (Services +     │   │
-│  │  Material-UI) │  │                │  │   LocalStorage)  │   │
-│  └───────────────┘  └────────────────┘  └──────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-                    ┌─────────────────────┐
-                    │   Ruff Official     │
-                    │   Documentation     │
-                    │  (docs.astral.sh)   │
-                    └─────────────────────┘
+Build Time:                          Runtime:
+┌─────────────────────────┐         ┌─────────────────────────────────────────────────┐
+│   Build Environment     │         │           Browser Client (SPA)                 │
+├─────────────────────────┤         ├─────────────────────────────────────────────────┤
+│  ┌──────────────────┐   │   ──►   │  ┌────────────┐  ┌─────────────┐  ┌─────────┐ │
+│  │ Data Fetch       │   │         │  │  UI Layer  │  │ State Layer │  │ Embedded│ │
+│  │ Script           │   │         │  │ (React +   │◄─┤ (Zustand)   │◄─┤ Rules   │ │
+│  │                  │   │         │  │ Material)  │  │             │  │ Data    │ │
+│  └──────────────────┘   │         │  └────────────┘  └─────────────┘  └─────────┘ │
+└─────────────────────────┘         └─────────────────────────────────────────────────┘
+          │                                                                │
+          ▼                                                                ▼
+┌─────────────────────┐                                       ┌──────────────────┐
+│   Ruff Official     │                                       │   LocalStorage   │
+│   Documentation     │                                       │ (User Settings)  │
+│  (docs.astral.sh)   │                                       └──────────────────┘
+└─────────────────────┘
 ```
 
 ### 技術スタック詳細
@@ -118,18 +119,23 @@ interface FilterOptions {
 ### データフロー設計
 
 ```
-Data Fetching Flow:
+Build Time Data Preparation:
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│ App Startup     │──►│ RuffDataFetcher  │──►│ Parse & Cache   │
+│ Build Script    │──►│ Data Fetcher     │──►│ Parse & JSON    │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                 │                       │
                                 ▼                       ▼
                     ┌──────────────────┐    ┌─────────────────┐
-                    │ Official Docs    │    │ Zustand Store   │
-                    │ (Batch Fetch)    │    │ + LocalStorage  │
+                    │ Official Docs    │    │ Static JSON     │
+                    │ (Scraping)       │    │ (Embedded)      │
                     └──────────────────┘    └─────────────────┘
 
-User Interaction Flow:
+Runtime User Interaction:
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ App Initialize  │──►│ Load Static Data │──►│ Zustand Store   │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                                              │
+         ▼                                              ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │ UI Component    │──►│ Zustand Action   │──►│ State Update    │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
@@ -137,7 +143,7 @@ User Interaction Flow:
                                 ▼                       ▼
                     ┌──────────────────┐    ┌─────────────────┐
                     │ React Re-render  │    │ LocalStorage    │
-                    │                  │    │ Sync            │
+                    │                  │    │ (User Settings) │
                     └──────────────────┘    └─────────────────┘
 ```
 
@@ -177,10 +183,11 @@ App (Router)
 - **コード分割**: 非クリティカルなコンポーネント（モーダル、設定画面）は lazy loading
 
 ### データ取得・管理
-- **レート制限**: 公式ドキュメントへのリクエストは100ms間隔で制限
-- **エラーハンドリング**: 指数バックオフによるリトライ機構（最大3回）
-- **キャッシュ戦略**: LocalStorage + IndexedDB のハイブリッド構成
-- **バージョン管理**: ruffバージョン情報を保存し、データ互換性を管理
+- **ビルド時データフェッチ**: 公式ドキュメントからのデータ取得はビルドプロセスでのみ実行
+- **静的データ埋め込み**: 取得したルールデータは JSON として静的アセットに埋め込み
+- **ビルド時エラーハンドリング**: データ取得失敗時のビルド失敗とフォールバック機構
+- **バージョン管理**: ビルド時に取得したruffバージョンを埋め込みデータに含める
+- **データ更新**: 新しいルール情報取得にはアプリケーション再ビルド・デプロイが必要
 
 ### 状態管理
 - **永続化**: ユーザー設定（enabled/disabled, ignoreReason）のみを永続化
@@ -188,9 +195,10 @@ App (Router)
 - **開発者ツール**: Zustand devtools による状態デバッグ対応
 
 ### セキュリティ
-- **CSP設定**: 外部リソース（docs.astral.sh）へのアクセス制限
-- **データサニタイゼーション**: 公式ドキュメントから取得したHTMLの適切なサニタイズ
-- **XSS対策**: DOMPurify による HTML コンテンツの無害化
+- **CSP設定**: 外部リソースへのランタイムアクセス不要のため厳格なCSP適用可能
+- **データサニタイゼーション**: ビルド時に取得したHTMLの適切なサニタイズとJSON化
+- **XSS対策**: 静的データのため XSS リスクは大幅に軽減、出力時のエスケープ処理
+- **ビルド時セキュリティ**: ビルド環境でのデータ取得時のセキュリティ検証
 
 ### UI/UX
 - **レスポンシブ対応**: モバイル・タブレット・デスクトップの3段階ブレークポイント
@@ -198,10 +206,11 @@ App (Router)
 - **エラー表示**: ユーザーフレンドリーなエラーメッセージとフォールバック機能
 
 ### デプロイメント
-- **Docker**: マルチステージビルドによるイメージサイズ最適化、ヘルスチェック設定必須
-- **静的ホスティング**: GitHub Pages用の相対パス設定、バンドルサイズ最適化（手動チャンク分割）
-- **CORS対応**: 外部API（docs.astral.sh）アクセス時のプロキシまたはCORS設定
-- **環境変数管理**: 本番・開発環境での設定切り替え（APIエンドポイント、デバッグフラグ等）
+- **ビルド時データ取得**: CI/CD 環境でのビルド時インターネット接続とデータ取得権限が必要
+- **Docker**: ビルド時の外部アクセス許可、マルチステージビルドによるイメージサイズ最適化
+- **静的ホスティング**: 外部API依存なしの完全静的配信、高いキャッシュ効率
+- **CI/CDパイプライン**: データ取得失敗時のビルド中断とエラーハンドリング
+- **環境変数管理**: ビルド時の設定切り替え（データソースURL、タイムアウト設定等）
 
 ## ディレクトリ構成
 
@@ -227,9 +236,9 @@ src/
 │       ├── AppLayout/
 │       └── PageContainer/
 ├── services/                  # Business logic
-│   ├── ruffDataFetcher.ts
 │   ├── configGenerator.ts
 │   ├── storageManager.ts
+│   ├── dataLoader.ts         # Static data loader
 │   └── validationService.ts
 ├── store/                     # State management
 │   ├── rulesStore.ts
@@ -255,10 +264,18 @@ src/
 │   └── components/           # Component-specific styles
 ├── assets/                    # Static assets
 │   ├── icons/
-│   └── images/
-└── tests/                     # Test utilities
-    ├── __mocks__/
-    ├── fixtures/
-    └── helpers/
+│   ├── images/
+│   └── data/                 # Embedded rule data
+│       └── ruff-rules.json   # Build-time generated rules (final)
+├── data/                      # Build-time generated data
+│   └── ruff-rules.json       # Static rule data (intermediate output)
+├── tests/                     # Test utilities
+│   ├── __mocks__/
+│   ├── fixtures/
+│   └── helpers/
+└── scripts/                   # Build-time scripts
+    ├── fetchRuffData.js       # Data fetcher script
+    ├── parseRuffData.js       # HTML parser & JSON converter
+    └── validateData.js        # Data validation script
 ```
 
