@@ -1,0 +1,340 @@
+{
+  "rules": [
+    {
+      "code": "E501",
+      "name": "line-too-long",
+      "category": "pycodestyle",
+      "description": "Line too long (88 > 79 characters)",
+      "example": "# This is a very long line that exceeds the maximum line length and should be wrapped",
+      "fixedExample": "# This is a very long line that exceeds the maximum\n# line length and should be wrapped",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "E502",
+      "name": "redundant-backslash",
+      "category": "pycodestyle",
+      "description": "The backslash is redundant between brackets",
+      "example": "foo = [\n    1, 2, 3, \\\n]",
+      "fixedExample": "foo = [\n    1, 2, 3,\n]",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "F401",
+      "name": "unused-import",
+      "category": "pyflakes",
+      "description": "Module imported but unused",
+      "example": "import os\nimport sys\n\nprint('hello')",
+      "fixedExample": "print('hello')",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "F841",
+      "name": "unused-variable",
+      "category": "pyflakes",
+      "description": "Local variable is assigned to but never used",
+      "example": "def foo():\n    x = 1\n    return 2",
+      "fixedExample": "def foo():\n    return 2",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "W503",
+      "name": "line-break-before-binary-operator",
+      "category": "pycodestyle",
+      "description": "Line break occurred before a binary operator",
+      "legendInfo": {
+        "status": "deprecated",
+        "fixable": false
+      }
+    },
+    {
+      "code": "D203",
+      "name": "one-blank-line-before-class",
+      "category": "pydocstyle",
+      "description": "1 blank line required before class docstring",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "D211",
+      "name": "no-blank-line-before-class",
+      "category": "pydocstyle",
+      "description": "No blank lines allowed before class docstring",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "N801",
+      "name": "invalid-class-name",
+      "category": "pep8-naming",
+      "description": "Class name should use CapWords convention",
+      "example": "class my_class:\n    pass",
+      "fixedExample": "class MyClass:\n    pass",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "N802",
+      "name": "invalid-function-name",
+      "category": "pep8-naming",
+      "description": "Function name should be lowercase",
+      "example": "def MyFunction():\n    pass",
+      "fixedExample": "def my_function():\n    pass",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "UP001",
+      "name": "useless-metaclass-type",
+      "category": "pyupgrade",
+      "description": "Useless metaclass type",
+      "example": "class Foo(metaclass=type):\n    pass",
+      "fixedExample": "class Foo:\n    pass",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "RUF001",
+      "name": "ambiguous-unicode-character-string",
+      "category": "ruff",
+      "description": "String contains ambiguous unicode character",
+      "legendInfo": {
+        "status": "preview",
+        "fixable": true
+      }
+    },
+    {
+      "code": "RUF100",
+      "name": "unused-noqa",
+      "category": "ruff",
+      "description": "Unused `noqa` directive",
+      "example": "x = 1  # noqa: F401",
+      "fixedExample": "x = 1",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "B006",
+      "name": "mutable-argument-default",
+      "category": "flake8-bugbear",
+      "description": "Do not use mutable data structures for argument defaults",
+      "example": "def foo(bar=[]):\n    bar.append(1)\n    return bar",
+      "fixedExample": "def foo(bar=None):\n    if bar is None:\n        bar = []\n    bar.append(1)\n    return bar",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "B007",
+      "name": "unused-loop-control-variable",
+      "category": "flake8-bugbear",
+      "description": "Loop control variable not used within the loop body",
+      "example": "for i in range(10):\n    print('hello')",
+      "fixedExample": "for _ in range(10):\n    print('hello')",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "C901",
+      "name": "complex-structure",
+      "category": "mccabe",
+      "description": "Function is too complex",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "I001",
+      "name": "unsorted-imports",
+      "category": "isort",
+      "description": "Import block is un-sorted or un-formatted",
+      "example": "import sys\nimport os",
+      "fixedExample": "import os\nimport sys",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "Q000",
+      "name": "bad-quotes-inline-string",
+      "category": "flake8-quotes",
+      "description": "Single quotes found but double quotes preferred",
+      "example": "x = 'hello'",
+      "fixedExample": "x = \"hello\"",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": true
+      }
+    },
+    {
+      "code": "S101",
+      "name": "assert",
+      "category": "flake8-bandit",
+      "description": "Use of assert detected",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "S102",
+      "name": "exec-builtin",
+      "category": "flake8-bandit",
+      "description": "Use of exec detected",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "T201",
+      "name": "print",
+      "category": "flake8-print",
+      "description": "Print statement found",
+      "example": "print('debug')",
+      "fixedExample": "logger.debug('debug')",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false
+      }
+    },
+    {
+      "code": "AIR001",
+      "name": "airflow-variable-name-task-id-mismatch",
+      "category": "airflow",
+      "description": "Variable name should match the task_id",
+      "legendInfo": {
+        "status": "stable",
+        "fixable": false,
+        "ecosystemSpecific": ["airflow"]
+      }
+    },
+    {
+      "code": "FAST001",
+      "name": "fastapi-redundant-response-model",
+      "category": "fastapi",
+      "description": "Redundant response_model argument",
+      "legendInfo": {
+        "status": "preview",
+        "fixable": true,
+        "ecosystemSpecific": ["fastapi"]
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "pycodestyle",
+      "name": "Python Code Style",
+      "description": "Style guide enforcement based on PEP 8",
+      "ruleCount": 3
+    },
+    {
+      "id": "pyflakes",
+      "name": "Pyflakes",
+      "description": "Logical errors in Python code",
+      "ruleCount": 2
+    },
+    {
+      "id": "pydocstyle",
+      "name": "Pydocstyle",
+      "description": "Docstring style checker",
+      "ruleCount": 2
+    },
+    {
+      "id": "pep8-naming",
+      "name": "PEP 8 Naming",
+      "description": "Naming convention checker",
+      "ruleCount": 2
+    },
+    {
+      "id": "pyupgrade",
+      "name": "Pyupgrade",
+      "description": "Upgrade syntax for newer versions of Python",
+      "ruleCount": 1
+    },
+    {
+      "id": "ruff",
+      "name": "Ruff-specific",
+      "description": "Ruff-specific rules",
+      "ruleCount": 2
+    },
+    {
+      "id": "flake8-bugbear",
+      "name": "Flake8-bugbear",
+      "description": "Finding likely bugs and design problems",
+      "ruleCount": 2
+    },
+    {
+      "id": "mccabe",
+      "name": "McCabe",
+      "description": "Complexity checker",
+      "ruleCount": 1
+    },
+    {
+      "id": "isort",
+      "name": "isort",
+      "description": "Import statement sorter",
+      "ruleCount": 1
+    },
+    {
+      "id": "flake8-quotes",
+      "name": "Flake8-quotes",
+      "description": "Quote style checker",
+      "ruleCount": 1
+    },
+    {
+      "id": "flake8-bandit",
+      "name": "Flake8-bandit",
+      "description": "Security issue checker",
+      "ruleCount": 2
+    },
+    {
+      "id": "flake8-print",
+      "name": "Flake8-print",
+      "description": "Print statement checker",
+      "ruleCount": 1
+    },
+    {
+      "id": "airflow",
+      "name": "Airflow",
+      "description": "Apache Airflow-specific rules",
+      "ruleCount": 1
+    },
+    {
+      "id": "fastapi",
+      "name": "FastAPI",
+      "description": "FastAPI-specific rules",
+      "ruleCount": 1
+    }
+  ],
+  "version": "0.1.0",
+  "buildTimestamp": "2024-12-29T00:00:00.000Z"
+}

@@ -85,26 +85,82 @@ export const createMockCategories = (count: number = 5): RuffCategory[] =>
  */
 export const createMockEmbeddedData = (
   overrides: Partial<EmbeddedRuffData> = {},
-): EmbeddedRuffData => ({
-  rules: createMockRules(20).map((rule) => ({
-    code: rule.code,
-    name: rule.name,
-    category: rule.category,
-    description: rule.description,
-    example: rule.example,
-    fixedExample: rule.fixedExample,
-    legendInfo: rule.legendInfo,
-  })),
-  categories: createMockCategories(5).map((cat) => ({
-    id: cat.id,
-    name: cat.name,
-    description: cat.description,
-    ruleCount: cat.ruleCount,
-  })),
-  version: '0.1.0',
-  buildTimestamp: new Date().toISOString(),
-  ...overrides,
-});
+): EmbeddedRuffData => {
+  // Create diverse rules with various properties
+  const rules = [
+    {
+      code: 'E501',
+      name: 'line-too-long',
+      category: 'pycodestyle',
+      description: 'Line too long',
+      example: 'x = 1 # very long line...',
+      fixedExample: 'x = 1',
+      legendInfo: createMockLegendInfo({ fixable: false }),
+    },
+    {
+      code: 'F401',
+      name: 'unused-import',
+      category: 'pyflakes',
+      description: 'Unused import',
+      example: 'import os',
+      legendInfo: createMockLegendInfo({ fixable: true }),
+    },
+    {
+      code: 'W503',
+      name: 'line-break-operator',
+      category: 'pycodestyle',
+      description: 'Line break before operator',
+      legendInfo: createMockLegendInfo({ status: 'deprecated', fixable: false }),
+    },
+    {
+      code: 'D203',
+      name: 'blank-line-before-class',
+      category: 'pydocstyle',
+      description: 'Blank line before class',
+      legendInfo: createMockLegendInfo({ fixable: true }),
+    },
+    {
+      code: 'RUF001',
+      name: 'ambiguous-unicode',
+      category: 'ruff',
+      description: 'Ambiguous unicode character',
+      legendInfo: createMockLegendInfo({ status: 'preview', fixable: true }),
+    },
+  ];
+
+  return {
+    rules,
+    categories: [
+      {
+        id: 'pycodestyle',
+        name: 'Python Code Style',
+        description: 'PEP 8 style guide',
+        ruleCount: 2,
+      },
+      {
+        id: 'pyflakes',
+        name: 'Pyflakes',
+        description: 'Logical errors',
+        ruleCount: 1,
+      },
+      {
+        id: 'pydocstyle',
+        name: 'Pydocstyle',
+        description: 'Docstring style',
+        ruleCount: 1,
+      },
+      {
+        id: 'ruff',
+        name: 'Ruff-specific',
+        description: 'Ruff rules',
+        ruleCount: 1,
+      },
+    ],
+    version: '0.1.0',
+    buildTimestamp: new Date().toISOString(),
+    ...overrides,
+  };
+};
 
 /**
  * Predefined test rules for specific scenarios
