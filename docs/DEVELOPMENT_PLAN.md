@@ -99,15 +99,17 @@ npm create vite@latest ruff-config-manager -- --template react-ts
 - [x] **カバレッジ100%確保**: 全関数・エラーケースのテスト
 
 #### 2.3 状態管理実装（テスト駆動開発）
-- [x] **テストコード優先作成**: 状態管理のテストを先に実装（rulesStore完了）
+- [x] **テストコード優先作成**: 状態管理のテストを先に実装
 - [x] **`src/store/rulesStore.ts`** 実装
   - TypeScript厳密型による Zustand + Immer 状態管理
   - ルール一覧の型安全な管理
   - LocalStorage 永続化対応
   - 基本的なフィルタリング機能
-- [ ] **`src/store/uiStore.ts`** 実装
-  - UI状態管理（ローディング、エラー、選択状態等）
-- [ ] **カバレッジ100%確保**: 全状態更新・副作用のテスト（rulesStoreのみ完了）
+- [x] **`src/store/uiStore.ts`** 実装
+  - UI状態管理（テーマ、ビューモード、サイドバー、通知、モーダル）
+  - LocalStorage永続化対応
+- [x] **カバレッジ100%確保**: 全状態更新・副作用のテスト
+- [x] **`src/store/index.ts`** エクスポート統合
 
 #### 2.4 基本UIコンポーネント（テスト駆動開発）
 - [ ] **テストコード優先作成**: 全UIコンポーネントのテストを先に実装
