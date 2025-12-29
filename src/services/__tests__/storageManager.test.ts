@@ -288,4 +288,53 @@ describe('storageManager', () => {
       expect(prefs[specialCode]).toBeDefined();
     });
   });
+
+  describe('Error handling', () => {
+    it('should handle localStorage.setItem errors in saveUserSettings', () => {
+      // Given: localStorage.setItem throws error
+      const mockSetItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+
+      const settings: UserSettings = {
+        ruleSettings: {},
+        viewMode: 'list',
+        lastSelectedCategory: null,
+        customTemplates: [],
+        version: '1.0.0',
+      };
+
+      // When: Save settings
+      // Then: Should not throw, error is caught and logged
+      expect(() => saveUserSettings(settings)).not.toThrow();
+
+      mockSetItem.mockRestore();
+    });
+
+    it('should handle localStorage.removeItem errors in clearUserSettings', () => {
+      // Given: localStorage.removeItem throws error
+      const mockRemoveItem = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+        throw new Error('Access denied');
+      });
+
+      // When: Clear settings
+      // Then: Should not throw, error is caught and logged
+      expect(() => clearUserSettings()).not.toThrow();
+
+      mockRemoveItem.mockRestore();
+    });
+
+    it('should handle localStorage.setItem errors in saveRulePreference', () => {
+      // Given: localStorage.setItem throws error
+      const mockSetItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+
+      // When: Save rule preference
+      // Then: Should not throw, error is caught and logged
+      expect(() => saveRulePreference('E501', false, 'Test')).not.toThrow();
+
+      mockSetItem.mockRestore();
+    });
+  });
 });

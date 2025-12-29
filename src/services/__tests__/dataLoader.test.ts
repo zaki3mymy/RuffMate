@@ -186,4 +186,146 @@ describe('dataLoader', () => {
       }
     });
   });
+
+  describe('Error handling', () => {
+    it('should throw error when fetch fails with network error', async () => {
+      // Given: Fetch returns network error
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+      // When & Then: Should throw error
+      await expect(loadRuffData()).rejects.toThrow('Network error');
+    });
+
+    it('should throw error with HTTP status details on non-200 response', async () => {
+      // Given: Fetch returns 404
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      } as Response);
+
+      // When & Then: Should throw detailed error
+      await expect(loadRuffData()).rejects.toThrow(
+        'Failed to load Ruff data: HTTP 404 Not Found',
+      );
+    });
+
+    it('should throw error when JSON is invalid', async () => {
+      // Given: Fetch returns invalid JSON
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
+      } as unknown as Response);
+
+      // When & Then: Should throw error
+      await expect(loadRuffData()).rejects.toThrow();
+    });
+
+    it('should throw error when data is not an object', async () => {
+      // Given: Fetch returns non-object data
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue('not an object'),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when data is null', async () => {
+      // Given: Fetch returns null
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue(null),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when rules array is missing', async () => {
+      // Given: Data without rules array
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          categories: [],
+          version: '1.0.0',
+          buildTimestamp: '2024-01-01T00:00:00Z',
+        }),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when categories array is missing', async () => {
+      // Given: Data without categories array
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          rules: [],
+          version: '1.0.0',
+          buildTimestamp: '2024-01-01T00:00:00Z',
+        }),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when version is missing', async () => {
+      // Given: Data without version
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          rules: [],
+          categories: [],
+          buildTimestamp: '2024-01-01T00:00:00Z',
+        }),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when rules array is empty', async () => {
+      // Given: Data with empty rules array
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          rules: [],
+          categories: [],
+          version: '1.0.0',
+          buildTimestamp: '2024-01-01T00:00:00Z',
+        }),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should throw error when rule is missing required fields', async () => {
+      // Given: Rule without required fields
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: vi.fn().mockResolvedValue({
+          rules: [{ code: 'E501' }], // Missing other required fields
+          categories: [],
+          version: '1.0.0',
+          buildTimestamp: '2024-01-01T00:00:00Z',
+        }),
+      } as unknown as Response);
+
+      // When & Then: Should throw validation error
+      await expect(loadRuffData()).rejects.toThrow('Invalid Ruff data structure');
+    });
+
+    it('should handle non-Error exceptions', async () => {
+      // Given: Fetch throws non-Error exception
+      global.fetch = vi.fn().mockRejectedValue('String error');
+
+      // When & Then: Should throw generic error
+      await expect(loadRuffData()).rejects.toThrow('Unknown error loading Ruff data');
+    });
+  });
 });
