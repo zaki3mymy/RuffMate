@@ -51,21 +51,21 @@ function isValidEmbeddedData(data: unknown): data is EmbeddedRuffData {
   const obj = data as Record<string, unknown>;
 
   // Check required top-level fields
-  if (!Array.isArray(obj.rules)) return false;
-  if (!Array.isArray(obj.categories)) return false;
-  if (typeof obj.version !== 'string') return false;
-  if (typeof obj.buildTimestamp !== 'string') return false;
+  if (!Array.isArray(obj['rules'])) return false;
+  if (!Array.isArray(obj['categories'])) return false;
+  if (typeof obj['version'] !== 'string') return false;
+  if (typeof obj['buildTimestamp'] !== 'string') return false;
 
   // Validate at least one rule exists
-  if (obj.rules.length === 0) return false;
+  if (obj['rules'].length === 0) return false;
 
   // Validate first rule structure (sample check)
-  const firstRule = obj.rules[0] as Record<string, unknown>;
-  if (typeof firstRule.code !== 'string') return false;
-  if (typeof firstRule.name !== 'string') return false;
-  if (typeof firstRule.category !== 'string') return false;
-  if (typeof firstRule.description !== 'string') return false;
-  if (typeof firstRule.legendInfo !== 'object' || firstRule.legendInfo === null)
+  const firstRule = obj['rules'][0] as Record<string, unknown>;
+  if (typeof firstRule['code'] !== 'string') return false;
+  if (typeof firstRule['name'] !== 'string') return false;
+  if (typeof firstRule['category'] !== 'string') return false;
+  if (typeof firstRule['description'] !== 'string') return false;
+  if (typeof firstRule['legendInfo'] !== 'object' || firstRule['legendInfo'] === null)
     return false;
 
   return true;
