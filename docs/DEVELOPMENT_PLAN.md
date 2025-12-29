@@ -148,8 +148,14 @@ npm create vite@latest ruff-config-manager -- --template react-ts
 - [x] LocalStorage での設定永続化テスト
 - [x] 基本的な E2E テスト作成（ルール切り替え・設定出力）
 - [x] レスポンシブデザインの基本対応
-- [x] ビルドプロセスの動作確認（データ取得→ビルド→デプロイ）
-- [x] **Phase 2 MVP完了**: 全テスト215個合格、カバレッジ96.29%達成✅
+- [x] **ビルドプロセスの完全統合**
+  - [x] `scripts/buildRuffData.ts`: ビルド統合スクリプト
+  - [x] `scripts/parseRuffData.ts`: HTMLパーススクリプト（Phase 3で完成）
+  - [x] `scripts/validateData.ts`: データ検証スクリプト
+  - [x] package.json `prebuild`フック追加
+  - [x] ビルド時に`dist/data/ruff-rules.json`を自動生成
+  - [x] データ検証とタイムスタンプ更新機能
+- [x] **Phase 2 MVP完全完了**: 全テスト215個合格、カバレッジ96.29%達成、ビルドプロセス統合完了✅
 
 ---
 
