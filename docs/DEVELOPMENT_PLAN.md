@@ -74,39 +74,40 @@ npm create vite@latest ruff-config-manager -- --template react-ts
 **必須要件**: テストカバレッジ100%達成、テスト駆動開発（TDD）
 
 #### 2.1 ビルドスクリプト実装（テスト駆動開発）
-- [ ] **テストコード優先作成**: 全ビルドスクリプトのテストを先に実装
-- [ ] **`scripts/fetchRuffData.ts`** 詳細実装
+- [x] **テストコード優先作成**: 全ビルドスクリプトのテストを先に実装
+- [x] **`scripts/fetchRuffData.ts`** 詳細実装
   - TypeScript型安全なruff公式ドキュメント取得
   - エラーハンドリング・リトライ機構
   - タイムアウト・レート制限対応
-- [ ] **`scripts/parseRuffData.ts`** 詳細実装
+- [x] **`scripts/parseRuffData.ts`** 詳細実装
   - TypeScript型安全なHTMLパース・ルール情報抽出
   - 厳密な型定義によるJSON形式変換・構造化
   - データバリデーション・サニタイゼーション
-- [ ] **ビルドスクリプト統合**
+  - ※ fetchRuffData.ts に統合実装済み
+- [x] **ビルドスクリプト統合**
   - package.json の prebuild hooks設定
   - データ生成 → ビルド の自動化
-- [ ] **カバレッジ100%確保**: 全分岐・条件・関数のテスト
-- [ ] モックデータの作成（開発・テスト用）
+- [x] **カバレッジ100%確保**: 全分岐・条件・関数のテスト
+- [x] モックデータの作成（開発・テスト用）
 
 #### 2.2 静的データローダー（テスト駆動開発）
-- [ ] **テストコード優先作成**: dataLoader関連のテストを先に実装
-- [ ] **`src/services/dataLoader.ts`** 実装
+- [x] **テストコード優先作成**: dataLoader関連のテストを先に実装
+- [x] **`src/services/dataLoader.ts`** 実装
   - 埋め込み静的データの型安全な読み込み
   - データ形式のバリデーション
   - TypeScript厳密型チェックによるデータアクセス
-- [ ] **カバレッジ100%確保**: 全関数・エラーケースのテスト
+- [x] **カバレッジ100%確保**: 全関数・エラーケースのテスト
 
 #### 2.3 状態管理実装（テスト駆動開発）
-- [ ] **テストコード優先作成**: 状態管理のテストを先に実装
-- [ ] **`src/store/rulesStore.ts`** 実装
+- [x] **テストコード優先作成**: 状態管理のテストを先に実装（rulesStore完了）
+- [x] **`src/store/rulesStore.ts`** 実装
   - TypeScript厳密型による Zustand + Immer 状態管理
   - ルール一覧の型安全な管理
   - LocalStorage 永続化対応
   - 基本的なフィルタリング機能
 - [ ] **`src/store/uiStore.ts`** 実装
   - UI状態管理（ローディング、エラー、選択状態等）
-- [ ] **カバレッジ100%確保**: 全状態更新・副作用のテスト
+- [ ] **カバレッジ100%確保**: 全状態更新・副作用のテスト（rulesStoreのみ完了）
 
 #### 2.4 基本UIコンポーネント（テスト駆動開発）
 - [ ] **テストコード優先作成**: 全UIコンポーネントのテストを先に実装
@@ -124,8 +125,8 @@ npm create vite@latest ruff-config-manager -- --template react-ts
 - [ ] **カバレッジ100%確保**: 全プロパティ・イベント・レンダリングパターンのテスト
 
 #### 2.5 設定出力機能（テスト駆動開発）
-- [ ] **テストコード優先作成**: 設定出力機能のテストを先に実装
-- [ ] **`src/services/configGenerator.ts`** 実装
+- [x] **テストコード優先作成**: 設定出力機能のテストを先に実装（configGenerator完了）
+- [x] **`src/services/configGenerator.ts`** 実装
   - TypeScript型安全なpyproject.toml生成機能
   - コメント付き ignore リスト作成
   - 基本的なバリデーション機能
@@ -133,7 +134,7 @@ npm create vite@latest ruff-config-manager -- --template react-ts
   - 設定出力 UI
   - コピー・ダウンロード機能
   - プレビュー表示
-- [ ] **カバレッジ100%確保**: 全出力パターン・エラーケースのテスト
+- [ ] **カバレッジ100%確保**: 全出力パターン・エラーケースのテスト（configGeneratorのみ完了）
 
 #### 2.6 統合・動作確認
 - [ ] 静的データ読み込みからUI表示までの統合テスト
