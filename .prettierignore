@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+build
+.git
+*.md
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
