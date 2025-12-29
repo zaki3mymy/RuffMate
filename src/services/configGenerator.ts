@@ -85,3 +85,47 @@ export function generatePyprojectToml(
     ignoredRulesCount: ignoredRules.length,
   };
 }
+
+/**
+ * Generate Ruff configuration in specified format
+ *
+ * @param rules - Array of Ruff rules
+ * @param format - Output format ('toml' or 'json')
+ * @param options - Generation options
+ * @returns Generated configuration string
+ */
+export function generateRuffConfig(
+  rules: RuffRule[],
+  format: 'toml' | 'json' = 'toml',
+  options: GenerateOptions = {},
+): string {
+  if (format === 'json') {
+    // Generate JSON format (for pyproject.json or similar)
+    const { sortIgnored = false } = options;
+
+    // Filter disabled rules
+    let ignoredRules = rules.filter((rule) => !rule.enabled);
+
+    // Sort if requested
+    if (sortIgnored) {
+      ignoredRules = ignoredRules.sort((a, b) => a.code.localeCompare(b.code));
+    }
+
+    const config = {
+      tool: {
+        ruff: {
+          lint: {
+            select: ['ALL'],
+            ignore: ignoredRules.map((rule) => rule.code),
+          },
+        },
+      },
+    };
+
+    return JSON.stringify(config, null, 2);
+  } else {
+    // Generate TOML format
+    const result = generatePyprojectToml(rules, options);
+    return result.content;
+  }
+}
