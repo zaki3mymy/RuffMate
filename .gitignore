@@ -16,6 +16,15 @@ dist
 dist-ssr
 *.local
 
+# Astro
+.astro
+
+# Generated data
+src/data/rules.json
+
+# Analysis scripts
+analyze-trace.cjs
+
 # Test output
 tests/output/
 
