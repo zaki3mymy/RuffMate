@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro'
+import RuleItem from '../components/RuleItem.astro'
+import type { RulesData } from '../types/rules'
+
+// ビルド時にrules.jsonを読み込む
+const rulesData: RulesData = await import('../data/rules.json').then(
+  (m) => m.default
+)
+const { rules, version } = rulesData
+---
+
+<Layout title="RuffMate - Ruff設定管理ツール">
+  <div class="min-h-screen bg-gray-50">
+    <header class="bg-white shadow">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+          RuffMate
+        </h1>
+        <p class="mt-2 text-sm text-gray-600">
+          Ruff設定管理ツール - ルールの有効/無効を切り替えて pyproject.toml
+          をエクスポート
+        </p>
+        <div class="mt-2 text-xs text-gray-500">
+          バージョン: {version.version} | 全{rules.length}ルール | 取得日時: {
+            new Date(version.fetchedAt).toLocaleDateString('ja-JP')
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="space-y-3">
+        {rules.map((rule) => <RuleItem rule={rule} />)}
+      </div>
+    </main>
+  </div>
+</Layout>
