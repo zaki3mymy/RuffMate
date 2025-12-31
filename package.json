@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && npm run fetch-rules",
     "preview": "vite preview",
     "fetch-rules": "tsx scripts/fetch-rules.ts",
-    "prebuild": "npm run fetch-rules",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",

@@ -7,7 +7,7 @@ import type { RuffRule, RuffVersion, RulesData } from '../src/types/rules.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const OUTPUT_PATH = join(__dirname, '../src/data/rules.json')
+const OUTPUT_PATH = join(__dirname, '../dist/data/rules.json')
 
 type RuleStatus = 'stable' | 'preview' | 'deprecated' | 'removed'
 
