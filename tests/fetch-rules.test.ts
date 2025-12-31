@@ -2,45 +2,56 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { readFileSync, existsSync, unlinkSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { parseRules, saveToFile } from '../scripts/fetch-rules.js'
+import {
+  executeCommand,
+  parseRules,
+  saveToFile,
+} from '../scripts/fetch-rules.js'
 import type { RulesData } from '../src/types/rules.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const FIXTURE_PATH = join(__dirname, 'fixtures/ruff-rules.html')
+const FIXTURE_PATH = join(__dirname, 'fixtures/ruff-rules.md')
 const TEST_OUTPUT_PATH = join(__dirname, 'output/test-rules.json')
 
 describe('fetch-rules', () => {
-  let sampleHtml: string
+  let sampleMarkdown: string
 
   beforeEach(() => {
-    // サンプルHTMLを読み込み
-    sampleHtml = readFileSync(FIXTURE_PATH, 'utf-8')
+    // サンプルMarkdownを読み込み
+    sampleMarkdown = readFileSync(FIXTURE_PATH, 'utf-8')
+  })
+
+  describe('executeCommand', () => {
+    it('should execute command and return output', () => {
+      // 実際のコマンドを実行するのではなく、単純なテストコマンドを使用
+      const result = executeCommand('echo "test output"')
+      expect(result).toBe('test output')
+    })
   })
 
   describe('parseRules', () => {
-    it('should parse HTML and extract rules correctly', () => {
-      const result = parseRules(sampleHtml)
+    it('should parse Markdown and extract rules correctly', () => {
+      const result = parseRules(sampleMarkdown)
 
       // 基本的な構造チェック
       expect(result).toHaveProperty('version')
       expect(result).toHaveProperty('rules')
       expect(Array.isArray(result.rules)).toBe(true)
-      expect(result.rules.length).toBeGreaterThan(0)
-    })
 
-    it('should extract version information', () => {
-      const result = parseRules(sampleHtml)
-
+      // バージョン情報チェック
       expect(result.version).toHaveProperty('version')
       expect(result.version).toHaveProperty('fetchedAt')
       expect(typeof result.version.version).toBe('string')
       expect(typeof result.version.fetchedAt).toBe('string')
+
+      // ルール数チェック
+      expect(result.rules.length).toBeGreaterThan(900)
     })
 
     it('should parse individual rules with correct structure', () => {
-      const result = parseRules(sampleHtml)
+      const result = parseRules(sampleMarkdown)
       const firstRule = result.rules[0]
 
       // 必須フィールドのチェック
@@ -62,10 +73,18 @@ describe('fetch-rules', () => {
         firstRule.status
       )
       expect(typeof firstRule.documentUrl).toBe('string')
+
+      // 新しいオプショナルフィールドのチェック
+      if (firstRule.whyBad) {
+        expect(typeof firstRule.whyBad).toBe('string')
+      }
+      if (firstRule.example) {
+        expect(typeof firstRule.example).toBe('string')
+      }
     })
 
     it('should parse specific known rules correctly', () => {
-      const result = parseRules(sampleHtml)
+      const result = parseRules(sampleMarkdown)
 
       // AIR001ルールを検索
       const air001 = result.rules.find((r) => r.code === 'AIR001')
@@ -75,18 +94,18 @@ describe('fetch-rules', () => {
         expect(air001.categoryCode).toBe('AIR')
         expect(air001.category).toContain('Airflow')
         expect(air001.status).toBe('stable')
-        expect(air001.documentUrl).toContain(
-          'airflow-variable-name-task-id-mismatch'
+        expect(air001.documentUrl).toBe(
+          'https://docs.astral.sh/ruff/rules/airflow-variable-name-task-id-mismatch/'
         )
+        // Markdownパースで抽出されるフィールドを確認
+        expect(air001.summary).toBeTruthy()
+        expect(air001.whyBad).toBeTruthy()
+        expect(air001.example).toBeTruthy()
       }
     })
 
-    it('should correctly identify rule statuses', () => {
-      const result = parseRules(sampleHtml)
-
-      // 各ステータスのルールが存在することを確認
-      const statuses = new Set(result.rules.map((r) => r.status))
-      expect(statuses.size).toBeGreaterThan(0)
+    it('should correctly set rule statuses', () => {
+      const result = parseRules(sampleMarkdown)
 
       // すべてのステータスが有効な値であることを確認
       result.rules.forEach((rule) => {
@@ -94,37 +113,41 @@ describe('fetch-rules', () => {
           rule.status
         )
       })
+
+      // 現在の実装ではすべてstableとして扱われる
+      const statuses = new Set(result.rules.map((r) => r.status))
+      expect(statuses.has('stable')).toBe(true)
     })
 
     it('should extract category codes correctly', () => {
-      const result = parseRules(sampleHtml)
+      const result = parseRules(sampleMarkdown)
 
       // カテゴリコードのユニークな一覧
       const categoryCodes = new Set(result.rules.map((r) => r.categoryCode))
       expect(categoryCodes.size).toBeGreaterThan(0)
 
-      // すべてのカテゴリコードが大文字のアルファベットであることを確認
+      // すべてのカテゴリコードが大文字のアルファベット（と数字）であることを確認
       categoryCodes.forEach((code) => {
-        expect(code).toMatch(/^[A-Z]+$/)
+        expect(code).toMatch(/^[A-Z0-9]+$/)
       })
     })
 
     it('should generate correct document URLs', () => {
-      const result = parseRules(sampleHtml)
+      const result = parseRules(sampleMarkdown)
 
       result.rules.forEach((rule) => {
         expect(rule.documentUrl).toMatch(
           /^https:\/\/docs\.astral\.sh\/ruff\/rules\//
         )
+        expect(rule.documentUrl).toContain(rule.name)
       })
     })
 
-    it('should handle empty HTML gracefully', () => {
-      const emptyHtml = '<html><body></body></html>'
-      const result = parseRules(emptyHtml)
+    it('should handle empty Markdown gracefully', () => {
+      const emptyMarkdown = ''
+      const result = parseRules(emptyMarkdown)
 
       expect(result.rules).toEqual([])
-      expect(result.version.version).toBe('unknown')
     })
   })
 
@@ -168,11 +191,11 @@ describe('fetch-rules', () => {
   })
 
   describe('Integration', () => {
-    it('should parse sample HTML and produce valid output', () => {
-      const result = parseRules(sampleHtml)
+    it('should parse sample Markdown and produce valid output', () => {
+      const result = parseRules(sampleMarkdown)
 
-      // 最低限のルール数を確認（Airflowカテゴリだけでも複数ある）
-      expect(result.rules.length).toBeGreaterThan(5)
+      // 最低限のルール数を確認
+      expect(result.rules.length).toBeGreaterThan(900)
 
       // すべてのルールが必須フィールドを持つことを確認
       result.rules.forEach((rule) => {
