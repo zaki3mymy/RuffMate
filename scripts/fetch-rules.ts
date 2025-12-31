@@ -57,6 +57,29 @@ function extractSection(
 }
 
 /**
+ * ルールの状態を推測する
+ */
+function _guessStatus(block: string): RuleStatus {
+  // preview?
+  if (block.match(/.*`--preview`.*/)) {
+    return 'preview'
+  }
+  // deprecated?
+  else if (
+    extractSection(block, 'Deprecated') ||
+    extractSection(block, 'Deprecation')
+  ) {
+    return 'deprecated'
+  }
+  // removed?
+  else if (extractSection(block, 'Removed')) {
+    return 'removed'
+  } else {
+    return 'stable'
+  }
+}
+
+/**
  * CLIからのMarkdown出力をパースしてルール一覧を抽出
  */
 function parseRules(markdown: string): RulesData {
@@ -82,11 +105,9 @@ function parseRules(markdown: string): RulesData {
     const categoryMatch = block.match(/Derived from the \*\*(.+?)\*\* linter/)
     if (!categoryMatch) continue
 
-    const categoryName = categoryMatch[1].trim()
+    const category = categoryMatch[1].trim()
     // カテゴリコードはルールコードのアルファベット部分
     const categoryCode = code.match(/^([A-Z]+)/)?.[1] || code
-
-    const category = `${categoryName} (${categoryCode})`
 
     // "What it does" セクションから概要を取得
     const whatItDoes = extractSection(block, 'What it does')
@@ -101,9 +122,7 @@ function parseRules(markdown: string): RulesData {
     // ドキュメントURLを生成
     const documentUrl = `https://docs.astral.sh/ruff/rules/${name}/`
 
-    // ステータスは現時点では判定できないため、デフォルトを'stable'とする
-    // 将来的には別のCLIコマンドや出力から判定する可能性あり
-    const status: RuleStatus = 'stable'
+    const status: RuleStatus = _guessStatus(block)
 
     rules.push({
       code,

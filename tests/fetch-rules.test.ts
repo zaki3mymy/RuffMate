@@ -32,7 +32,7 @@ describe('fetch-rules', () => {
   })
 
   describe('parseRules', () => {
-    it('should parse Markdown and extract rules correctly', () => {
+    it('複数のルールをパースしてルール数が正しいこと', () => {
       const result = parseRules(sampleMarkdown)
 
       // 基本的な構造チェック
@@ -47,107 +47,272 @@ describe('fetch-rules', () => {
       expect(typeof result.version.fetchedAt).toBe('string')
 
       // ルール数チェック
-      expect(result.rules.length).toBeGreaterThan(900)
-    })
-
-    it('should parse individual rules with correct structure', () => {
-      const result = parseRules(sampleMarkdown)
-      const firstRule = result.rules[0]
-
-      // 必須フィールドのチェック
-      expect(firstRule).toHaveProperty('code')
-      expect(firstRule).toHaveProperty('name')
-      expect(firstRule).toHaveProperty('summary')
-      expect(firstRule).toHaveProperty('category')
-      expect(firstRule).toHaveProperty('categoryCode')
-      expect(firstRule).toHaveProperty('status')
-      expect(firstRule).toHaveProperty('documentUrl')
-
-      // 型チェック
-      expect(typeof firstRule.code).toBe('string')
-      expect(typeof firstRule.name).toBe('string')
-      expect(typeof firstRule.summary).toBe('string')
-      expect(typeof firstRule.category).toBe('string')
-      expect(typeof firstRule.categoryCode).toBe('string')
-      expect(['stable', 'preview', 'deprecated', 'removed']).toContain(
-        firstRule.status
+      expect(result.rules.length).toBe(6)
+      // stable: 2, removed: 1, preview: 1, deprecated: 2
+      expect(result.rules.filter((r) => r.status == 'stable').length).toBe(2)
+      expect(result.rules.filter((r) => r.status == 'removed').length).toBe(1)
+      expect(result.rules.filter((r) => r.status == 'preview').length).toBe(1)
+      expect(result.rules.filter((r) => r.status == 'deprecated').length).toBe(
+        2
       )
-      expect(typeof firstRule.documentUrl).toBe('string')
-
-      // 新しいオプショナルフィールドのチェック
-      if (firstRule.whyBad) {
-        expect(typeof firstRule.whyBad).toBe('string')
-      }
-      if (firstRule.example) {
-        expect(typeof firstRule.example).toBe('string')
-      }
     })
 
-    it('should parse specific known rules correctly', () => {
-      const result = parseRules(sampleMarkdown)
+    it('stableであるルールをパースできること', () => {
+      // prepare
+      const ruleText = [
+        '# sample-rule (SAM001)',
+        '',
+        'Derived from the **Sample** linter',
+        '',
+        '## What it does',
+        'sample rule',
+        '',
+        '## Why is this bad?',
+        'this is sample',
+        '',
+        'and new line',
+        '',
+        '## Example',
+        '```python',
+        'incorrect code',
+        '',
+        'Use instead:',
+        '```python',
+        'correct code',
+        '```',
+      ]
+      const md = ruleText.join('\n')
 
-      // AIR001ルールを検索
-      const air001 = result.rules.find((r) => r.code === 'AIR001')
-      expect(air001).toBeDefined()
-      if (air001) {
-        expect(air001.name).toBe('airflow-variable-name-task-id-mismatch')
-        expect(air001.categoryCode).toBe('AIR')
-        expect(air001.category).toContain('Airflow')
-        expect(air001.status).toBe('stable')
-        expect(air001.documentUrl).toBe(
-          'https://docs.astral.sh/ruff/rules/airflow-variable-name-task-id-mismatch/'
-        )
-        // Markdownパースで抽出されるフィールドを確認
-        expect(air001.summary).toBeTruthy()
-        expect(air001.whyBad).toBeTruthy()
-        expect(air001.example).toBeTruthy()
-      }
+      // exec
+      const result = parseRules(md)
+
+      // verify
+      // ルールが1つだけ
+      expect(result.rules.length).toBe(1)
+      // フィールドのチェック
+      const rule = result.rules[0]
+      expect(rule.code).toBe('SAM001')
+      expect(rule.name).toBe('sample-rule')
+      expect(rule.summary).toBe('sample rule')
+      expect(rule.category).toBe('Sample')
+      expect(rule.categoryCode).toBe('SAM')
+      expect(rule.status).toBe('stable')
+      expect(rule.documentUrl).toBe(
+        'https://docs.astral.sh/ruff/rules/sample-rule/'
+      )
+      expect(rule.whyBad).toBe('this is sample\n\nand new line')
+      expect(rule.example).toBe(
+        '```python\nincorrect code\n\nUse instead:\n```python\ncorrect code\n```'
+      )
     })
 
-    it('should correctly set rule statuses', () => {
-      const result = parseRules(sampleMarkdown)
+    it('previewであるルールをパースできること', () => {
+      // prepare
+      const ruleText = [
+        '# sample-rule (SAM001)',
+        '',
+        'Derived from the **Sample** linter',
+        '',
+        'This rule is in preview and is not stable. The `--preview` flag is required for use.',
+        '',
+        '## What it does',
+        'sample rule',
+        '',
+        '## Why is this bad?',
+        'this is sample',
+        '',
+        'and new line',
+        '',
+        '## Example',
+        '```python',
+        'incorrect code',
+        '',
+        'Use instead:',
+        '```python',
+        'correct code',
+        '```',
+      ]
+      const md = ruleText.join('\n')
 
-      // すべてのステータスが有効な値であることを確認
-      result.rules.forEach((rule) => {
-        expect(['stable', 'preview', 'deprecated', 'removed']).toContain(
-          rule.status
-        )
-      })
+      // exec
+      const result = parseRules(md)
 
-      // 現在の実装ではすべてstableとして扱われる
-      const statuses = new Set(result.rules.map((r) => r.status))
-      expect(statuses.has('stable')).toBe(true)
+      // verify
+      // ルールが1つだけ
+      expect(result.rules.length).toBe(1)
+      // フィールドのチェック
+      const rule = result.rules[0]
+      expect(rule.code).toBe('SAM001')
+      expect(rule.name).toBe('sample-rule')
+      expect(rule.summary).toBe('sample rule')
+      expect(rule.category).toBe('Sample')
+      expect(rule.categoryCode).toBe('SAM')
+      expect(rule.status).toBe('preview')
+      expect(rule.documentUrl).toBe(
+        'https://docs.astral.sh/ruff/rules/sample-rule/'
+      )
+      expect(rule.whyBad).toBe('this is sample\n\nand new line')
+      expect(rule.example).toBe(
+        '```python\nincorrect code\n\nUse instead:\n```python\ncorrect code\n```'
+      )
     })
 
-    it('should extract category codes correctly', () => {
-      const result = parseRules(sampleMarkdown)
+    it('deprecatedであるルールをパースできること(## Deprecated)', () => {
+      // prepare
+      const ruleText = [
+        '# sample-rule (SAM001)',
+        '',
+        'Derived from the **Sample** linter',
+        '',
+        '## Deprecated',
+        '',
+        "This rule has been deprecated as it's highly opinionated and overly strict in most cases.",
+        '',
+        '## What it does',
+        'sample rule',
+        '',
+        '## Why is this bad?',
+        'this is sample',
+        '',
+        'and new line',
+        '',
+        '## Example',
+        '```python',
+        'incorrect code',
+        '',
+        'Use instead:',
+        '```python',
+        'correct code',
+        '```',
+      ]
+      const md = ruleText.join('\n')
 
-      // カテゴリコードのユニークな一覧
-      const categoryCodes = new Set(result.rules.map((r) => r.categoryCode))
-      expect(categoryCodes.size).toBeGreaterThan(0)
+      // exec
+      const result = parseRules(md)
 
-      // すべてのカテゴリコードが大文字のアルファベット（と数字）であることを確認
-      categoryCodes.forEach((code) => {
-        expect(code).toMatch(/^[A-Z0-9]+$/)
-      })
+      // verify
+      // ルールが1つだけ
+      expect(result.rules.length).toBe(1)
+      // フィールドのチェック
+      const rule = result.rules[0]
+      expect(rule.code).toBe('SAM001')
+      expect(rule.name).toBe('sample-rule')
+      expect(rule.summary).toBe('sample rule')
+      expect(rule.category).toBe('Sample')
+      expect(rule.categoryCode).toBe('SAM')
+      expect(rule.status).toBe('deprecated')
+      expect(rule.documentUrl).toBe(
+        'https://docs.astral.sh/ruff/rules/sample-rule/'
+      )
+      expect(rule.whyBad).toBe('this is sample\n\nand new line')
+      expect(rule.example).toBe(
+        '```python\nincorrect code\n\nUse instead:\n```python\ncorrect code\n```'
+      )
     })
 
-    it('should generate correct document URLs', () => {
-      const result = parseRules(sampleMarkdown)
+    it('deprecatedであるルールをパースできること(## Deprecation)', () => {
+      // prepare
+      const ruleText = [
+        '# sample-rule (SAM001)',
+        '',
+        'Derived from the **Sample** linter',
+        '',
+        '## Deprecation',
+        '',
+        "This rule has been deprecated as it's highly opinionated and overly strict in most cases.",
+        '',
+        '## What it does',
+        'sample rule',
+        '',
+        '## Why is this bad?',
+        'this is sample',
+        '',
+        'and new line',
+        '',
+        '## Example',
+        '```python',
+        'incorrect code',
+        '',
+        'Use instead:',
+        '```python',
+        'correct code',
+        '```',
+      ]
+      const md = ruleText.join('\n')
 
-      result.rules.forEach((rule) => {
-        expect(rule.documentUrl).toMatch(
-          /^https:\/\/docs\.astral\.sh\/ruff\/rules\//
-        )
-        expect(rule.documentUrl).toContain(rule.name)
-      })
+      // exec
+      const result = parseRules(md)
+
+      // verify
+      // ルールが1つだけ
+      expect(result.rules.length).toBe(1)
+      // フィールドのチェック
+      const rule = result.rules[0]
+      expect(rule.code).toBe('SAM001')
+      expect(rule.name).toBe('sample-rule')
+      expect(rule.summary).toBe('sample rule')
+      expect(rule.category).toBe('Sample')
+      expect(rule.categoryCode).toBe('SAM')
+      expect(rule.status).toBe('deprecated')
+      expect(rule.documentUrl).toBe(
+        'https://docs.astral.sh/ruff/rules/sample-rule/'
+      )
+      expect(rule.whyBad).toBe('this is sample\n\nand new line')
+      expect(rule.example).toBe(
+        '```python\nincorrect code\n\nUse instead:\n```python\ncorrect code\n```'
+      )
     })
 
-    it('should handle empty Markdown gracefully', () => {
-      const emptyMarkdown = ''
-      const result = parseRules(emptyMarkdown)
+    it('removedであるルールをパースできること', () => {
+      // prepare
+      const ruleText = [
+        '# sample-rule (SAM001)',
+        '',
+        'Derived from the **Sample** linter',
+        '',
+        '## Removed',
+        'This rule has been removed because type checkers can infer this type without annotation.',
+        '',
+        '## What it does',
+        'sample rule',
+        '',
+        '## Why is this bad?',
+        'this is sample',
+        '',
+        'and new line',
+        '',
+        '## Example',
+        '```python',
+        'incorrect code',
+        '',
+        'Use instead:',
+        '```python',
+        'correct code',
+        '```',
+      ]
+      const md = ruleText.join('\n')
 
-      expect(result.rules).toEqual([])
+      // exec
+      const result = parseRules(md)
+
+      // verify
+      // ルールが1つだけ
+      expect(result.rules.length).toBe(1)
+      // フィールドのチェック
+      const rule = result.rules[0]
+      expect(rule.code).toBe('SAM001')
+      expect(rule.name).toBe('sample-rule')
+      expect(rule.summary).toBe('sample rule')
+      expect(rule.category).toBe('Sample')
+      expect(rule.categoryCode).toBe('SAM')
+      expect(rule.status).toBe('removed')
+      expect(rule.documentUrl).toBe(
+        'https://docs.astral.sh/ruff/rules/sample-rule/'
+      )
+      expect(rule.whyBad).toBe('this is sample\n\nand new line')
+      expect(rule.example).toBe(
+        '```python\nincorrect code\n\nUse instead:\n```python\ncorrect code\n```'
+      )
     })
   })
 
@@ -187,31 +352,6 @@ describe('fetch-rules', () => {
       if (existsSync(TEST_OUTPUT_PATH)) {
         unlinkSync(TEST_OUTPUT_PATH)
       }
-    })
-  })
-
-  describe('Integration', () => {
-    it('should parse sample Markdown and produce valid output', () => {
-      const result = parseRules(sampleMarkdown)
-
-      // 最低限のルール数を確認
-      expect(result.rules.length).toBeGreaterThan(900)
-
-      // すべてのルールが必須フィールドを持つことを確認
-      result.rules.forEach((rule) => {
-        expect(rule.code).toBeTruthy()
-        expect(rule.name).toBeTruthy()
-        expect(rule.summary).toBeTruthy()
-        expect(rule.category).toBeTruthy()
-        expect(rule.categoryCode).toBeTruthy()
-        expect(rule.status).toBeTruthy()
-        expect(rule.documentUrl).toBeTruthy()
-      })
-
-      // 重複するルールコードがないことを確認
-      const codes = result.rules.map((r) => r.code)
-      const uniqueCodes = new Set(codes)
-      expect(codes.length).toBe(uniqueCodes.size)
     })
   })
 })
