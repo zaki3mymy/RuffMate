@@ -1,9 +1,5 @@
-node_modules
 dist
-coverage
-build
-.git
-*.md
+node_modules
+.github
 package-lock.json
-pnpm-lock.yaml
-yarn.lock
+*.md
