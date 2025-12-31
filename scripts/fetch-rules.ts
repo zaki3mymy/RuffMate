@@ -1,141 +1,129 @@
 import { writeFileSync, mkdirSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-import * as cheerio from 'cheerio'
+import { execSync } from 'child_process'
 import type { RuffRule, RuffVersion, RulesData } from '../src/types/rules.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const RUFF_RULES_URL = 'https://docs.astral.sh/ruff/rules/'
 const OUTPUT_PATH = join(__dirname, '../src/data/rules.json')
 
 type RuleStatus = 'stable' | 'preview' | 'deprecated' | 'removed'
 
 /**
- * Ruff公式ドキュメントからHTMLを取得
+ * CLIコマンドを実行して出力を取得
  */
-async function fetchHtml(url: string): Promise<string> {
-  console.log('Fetching HTML from:', url)
+function executeCommand(command: string): string {
+  console.log('Executing command:', command)
 
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+  try {
+    const output = execSync(command, { encoding: 'utf-8' })
+    return output.trim()
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Command execution failed: ${error.message}`)
+    }
+    throw error
   }
-
-  return await response.text()
 }
 
 /**
- * HTMLからRuffバージョンを抽出
+ * CLIからRuffバージョンを取得
  */
-function extractVersion($: cheerio.CheerioAPI): RuffVersion {
-  const version: RuffVersion = {
-    version: 'unknown',
+function getRuffVersion(): RuffVersion {
+  const output = executeCommand('uvx ruff --version')
+
+  // 出力例: "ruff 0.14.10" から "0.14.10" を抽出
+  const match = output.match(/ruff\s+(\d+\.\d+\.\d+)/)
+  const version = match ? match[1] : 'unknown'
+
+  return {
+    version,
     fetchedAt: new Date().toISOString(),
   }
-
-  // meta[name="generator"]からバージョン情報を取得
-  const generatorContent = $('meta[name="generator"]').attr('content')
-  if (generatorContent) {
-    const match = generatorContent.match(/(\d+\.\d+\.\d+)/)
-    if (match) {
-      version.version = match[1]
-    }
-  }
-
-  return version
 }
 
 /**
- * ルールのステータスを判定（アイコンから）
+ * Markdownテキストから指定セクションの内容を抽出
  */
-function determineStatus(
-  statusCell: cheerio.Cheerio<cheerio.Element>
-): RuleStatus {
-  const statusHtml = statusCell.html() || ''
-
-  if (statusHtml.includes('🧪') || statusHtml.includes('preview')) {
-    return 'preview'
-  } else if (statusHtml.includes('⚠️') || statusHtml.includes('deprecated')) {
-    return 'deprecated'
-  } else if (statusHtml.includes('❌') || statusHtml.includes('removed')) {
-    return 'removed'
-  }
-
-  return 'stable'
+function extractSection(
+  markdown: string,
+  sectionTitle: string
+): string | undefined {
+  const regex = new RegExp(`## ${sectionTitle}\\n([\\s\\S]*?)(?=\\n## |$)`)
+  const match = markdown.match(regex)
+  return match ? match[1].trim() : undefined
 }
 
 /**
- * HTMLをパースしてルール一覧を抽出
+ * CLIからのMarkdown出力をパースしてルール一覧を抽出
  */
-function parseRules(html: string): RulesData {
-  console.log('Parsing HTML...')
+function parseRules(markdown: string): RulesData {
+  console.log('Parsing Markdown output from CLI...')
 
-  const $ = cheerio.load(html)
   const rules: RuffRule[] = []
-  const version = extractVersion($)
+  const version = getRuffVersion()
 
-  // 各カテゴリのh2要素を検索
-  $('h2').each((_, h2Element) => {
-    const $h2 = $(h2Element)
-    const headingText = $h2.text().trim()
+  // 各ルールは "# rule-name (CODE)" で始まる
+  const ruleBlocks = markdown.split(/\n(?=# [a-z])/g)
 
-    // カテゴリ名とカテゴリコードを抽出（例: "Airflow (AIR)" -> category="Airflow (AIR)", categoryCode="AIR"）
-    const categoryMatch = headingText.match(/^(.+?)\s*\(([A-Z]+)\)$/)
-    if (!categoryMatch) return // カテゴリ見出しでない場合はスキップ
+  for (const block of ruleBlocks) {
+    if (!block.trim()) continue
 
-    const category = headingText
-    const categoryCode = categoryMatch[2]
+    // ルールコードと名前を抽出
+    const headerMatch = block.match(/^#\s+(.+?)\s+\(([A-Z0-9]+)\)/)
+    if (!headerMatch) continue
 
-    // 次のtable要素を取得
-    const $table = $h2.nextAll('table').first()
-    if ($table.length === 0) return
+    const name = headerMatch[1].trim()
+    const code = headerMatch[2].trim()
 
-    // テーブルの各行を処理
-    $table.find('tbody tr').each((_, trElement) => {
-      const $row = $(trElement)
-      const cells = $row.find('td')
+    // カテゴリを抽出: "Derived from the **CategoryName** linter."
+    const categoryMatch = block.match(/Derived from the \*\*(.+?)\*\* linter/)
+    if (!categoryMatch) continue
 
-      if (cells.length >= 3) {
-        const code = $(cells[0]).text().trim()
-        const nameCell = $(cells[1])
-        const nameLink = nameCell.find('a')
-        const name = nameLink.text().trim()
-        const summary = $(cells[2]).text().trim()
-        const statusCell = $(cells[3])
+    const categoryName = categoryMatch[1].trim()
+    // カテゴリコードはルールコードのアルファベット部分
+    const categoryCode = code.match(/^([A-Z]+)/)?.[1] || code
 
-        // 空のルールコードはスキップ
-        if (!code) return
+    const category = `${categoryName} (${categoryCode})`
 
-        // ステータスを判定
-        const status = determineStatus(statusCell)
+    // "What it does" セクションから概要を取得
+    const whatItDoes = extractSection(block, 'What it does')
+    const summary = whatItDoes || ''
 
-        // ドキュメントURLを生成
-        const href = nameLink.attr('href') || ''
-        const documentUrl = href.startsWith('http')
-          ? href
-          : `https://docs.astral.sh/ruff/rules/${href}`
+    // "Why is this bad?" セクションを取得
+    const whyBad = extractSection(block, 'Why is this bad\\?')
 
-        rules.push({
-          code,
-          name,
-          summary,
-          category,
-          categoryCode,
-          status,
-          documentUrl,
-        })
-      }
+    // "Example" セクションを取得
+    const example = extractSection(block, 'Example')
+
+    // ドキュメントURLを生成
+    const documentUrl = `https://docs.astral.sh/ruff/rules/${name}/`
+
+    // ステータスは現時点では判定できないため、デフォルトを'stable'とする
+    // 将来的には別のCLIコマンドや出力から判定する可能性あり
+    const status: RuleStatus = 'stable'
+
+    rules.push({
+      code,
+      name,
+      summary,
+      category,
+      categoryCode,
+      status,
+      documentUrl,
+      whyBad,
+      example,
     })
-  })
+  }
 
   console.log(`Found ${rules.length} rules`)
   console.log(`Ruff version: ${version.version}`)
 
   if (rules.length === 0) {
     console.warn(
-      'Warning: No rules found. The HTML structure may have changed.'
+      'Warning: No rules found. The Markdown structure may have changed.'
     )
   }
 
@@ -159,10 +147,11 @@ function saveToFile(data: RulesData, outputPath: string): void {
 /**
  * メイン処理
  */
-async function main(): Promise<void> {
+function main(): void {
   try {
-    const html = await fetchHtml(RUFF_RULES_URL)
-    const data = parseRules(html)
+    console.log('Fetching rules from Ruff CLI...')
+    const markdown = executeCommand('uvx ruff rule --all')
+    const data = parseRules(markdown)
     saveToFile(data, OUTPUT_PATH)
   } catch (error) {
     console.error('Failed to fetch and parse rules:', error)
@@ -172,11 +161,13 @@ async function main(): Promise<void> {
 
 // スクリプトとして実行された場合
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((error) => {
+  try {
+    main()
+  } catch (error) {
     console.error('Error:', error)
     process.exit(1)
-  })
+  }
 }
 
 // テスト用にエクスポート
-export { fetchHtml, parseRules, saveToFile }
+export { executeCommand, getRuffVersion, parseRules, saveToFile }
