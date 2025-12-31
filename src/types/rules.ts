@@ -6,6 +6,8 @@ export interface RuffRule {
   categoryCode: string // "D"
   status: 'stable' | 'preview' | 'deprecated' | 'removed'
   documentUrl: string // 詳細ドキュメントのURL
+  whyBad?: string // "Why is this bad?"セクションの内容
+  example?: string // "Example"セクションの内容
 }
 
 export interface RuffVersion {
