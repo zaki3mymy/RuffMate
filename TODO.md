@@ -1,44 +1,50 @@
 # RuffMate 開発TODO
 
-## Phase 1: プロジェクトセットアップ
+## Phase 1: プロジェクトセットアップ ✅
 
-- [ ] Vite + React + TypeScript プロジェクトの初期化
-  - [ ] `npm create vite@latest . -- --template react-ts`
-  - [ ] 依存関係のインストール
-- [ ] TailwindCSSのセットアップ
-  - [ ] `npm install -D tailwindcss postcss autoprefixer`
-  - [ ] `npx tailwindcss init -p`
-  - [ ] `src/index.css`にTailwind directivesを追加
-- [ ] 追加パッケージのインストール
-  - [ ] `npm install cheerio` (スクレイピング用)
-  - [ ] `npm install -D @types/node` (Node.js型定義)
-- [ ] ディレクトリ構造の構築
-  - [ ] `src/components/`
-  - [ ] `src/hooks/`
-  - [ ] `src/types/`
-  - [ ] `src/utils/`
-  - [ ] `src/data/`
-  - [ ] `scripts/`
-  - [ ] `docs/`
-- [ ] GitHub Pagesデプロイ設定
-  - [ ] `vite.config.ts`に`base: '/RuffMate/'`を追加
-  - [ ] `.github/workflows/deploy.yml`を作成
+- [x] Vite + React + TypeScript プロジェクトの初期化
+  - [x] `npm create vite@latest . -- --template react-ts`
+  - [x] 依存関係のインストール
+- [x] TailwindCSSのセットアップ
+  - [x] `npm install tailwindcss @tailwindcss/vite` (v4)
+  - [x] `src/index.css`にTailwind directivesを追加
+- [x] 追加パッケージのインストール
+  - [x] `npm install -D @types/node` (Node.js型定義)
+  - [x] `npm install -D tsx` (TypeScriptスクリプト実行)
+  - [x] ESLint + Prettier + husky の導入
+  - [x] Vitest のセットアップ
+- [x] ディレクトリ構造の構築
+  - [x] `src/components/`
+  - [x] `src/hooks/`
+  - [x] `src/types/`
+  - [x] `src/utils/`
+  - [x] `scripts/`
+  - [x] `tests/` (テスト用)
+- [x] GitHub Pagesデプロイ設定
+  - [x] `vite.config.ts`に`base: '/RuffMate/'`を追加
+  - [x] `.github/workflows/deploy.yml`を作成
 
-## Phase 2: データ取得スクリプト
+## Phase 2: データ取得スクリプト ✅
 
-- [ ] 型定義ファイルの作成 (`src/types/rules.ts`)
-  - [ ] `RuffRule` interface
-  - [ ] `RuffVersion` interface
-  - [ ] `RulesData` interface
-  - [ ] `RuleSettings` interface
-- [ ] スクレイピングスクリプトの作成 (`scripts/fetch-rules.js`)
-  - [ ] Ruff公式ドキュメントからHTML取得
-  - [ ] ルール情報のパース（コード、名前、カテゴリ、状態）
-  - [ ] JSON出力処理
-  - [ ] エラーハンドリング実装
-- [ ] ビルドプロセスへの統合
-  - [ ] `package.json`の`scripts`に`fetch-rules`を追加
-  - [ ] `prebuild`スクリプトの設定
+- [x] 型定義ファイルの作成 (`src/types/rules.ts`)
+  - [x] `RuffRule` interface (whyBad, example フィールド追加)
+  - [x] `RuffVersion` interface
+  - [x] `RulesData` interface
+  - [x] `RuleSettings` interface
+- [x] CLI+Markdownパーススクリプトの作成 (`scripts/fetch-rules.ts`)
+  - [x] `uvx ruff --version` でバージョン取得
+  - [x] `uvx ruff rule --all` でルール一覧取得（Markdown形式）
+  - [x] ルール情報のパース（コード、名前、カテゴリ、状態、whyBad、example）
+  - [x] ステータス判定（stable/preview/deprecated/removed）
+  - [x] JSON出力処理 (`dist/data/rules.json`)
+  - [x] エラーハンドリング実装
+- [x] テストの作成
+  - [x] Vitest テストスイート作成
+  - [x] Markdownフィクスチャ準備
+  - [x] 936ルールのパース検証
+- [x] ビルドプロセスへの統合
+  - [x] `package.json`の`scripts`に`fetch-rules`を追加
+  - [x] `build`スクリプトでvite build後にfetch-rules実行
 
 ## Phase 3: コア機能実装
 
@@ -97,7 +103,14 @@
 
 ## メモ
 
-- 技術スタック: React 18+ + TypeScript + Vite + TailwindCSS
+- 技術スタック: React 18+ + TypeScript + Vite + TailwindCSS v4
 - デプロイ先: GitHub Pages
-- データソース: Ruff公式ドキュメント（ビルド時取得）
+- データソース: Ruff CLI (`uvx ruff rule --all`) - ビルド時取得
 - ストレージ: localStorage
+- テスト: Vitest
+- コード品質: ESLint + Prettier + husky
+
+## 完了したフェーズ
+
+- ✅ Phase 1: プロジェクトセットアップ
+- ✅ Phase 2: データ取得スクリプト（CLI+Markdownパース、936ルール対応）
