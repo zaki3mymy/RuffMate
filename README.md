@@ -143,6 +143,7 @@ A: 画面上部にRuffのバージョンが表示されます。アプリはビ�
 
 - アーキテクチャ: [docs/architecture.md](./docs/architecture.md)
 - 開発ガイド: [docs/development.md](./docs/development.md)
+- デプロイガイド: [docs/deployment.md](./docs/deployment.md)
 
 ## ライセンス
 
