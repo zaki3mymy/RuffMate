@@ -22,6 +22,33 @@ class RuleSettingsStore {
     return { enabled: true }
   }
 
+  // 同期取得（キャッシュ + localStorage）
+  getSyncWithStorage(ruleCode: string): RuleSettingData {
+    // キャッシュにあれば即座に返す
+    if (this.cache.has(ruleCode)) {
+      return this.cache.get(ruleCode)!
+    }
+
+    // localStorageから同期で読み込み
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`rule-${ruleCode}`)
+        if (stored) {
+          const data = JSON.parse(stored)
+          this.cache.set(ruleCode, data)
+          return data
+        }
+      } catch (error) {
+        console.error(`Failed to load ${ruleCode}:`, error)
+      }
+    }
+
+    // デフォルト値を返してキャッシュに保存
+    const defaultValue = { enabled: true }
+    this.cache.set(ruleCode, defaultValue)
+    return defaultValue
+  }
+
   // 非同期読み込み（キューに追加してバッチ処理）
   async load(ruleCode: string, callback: LoadCallback): Promise<void> {
     // 既にキャッシュにあれば即座にコールバック

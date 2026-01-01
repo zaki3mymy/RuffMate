@@ -6,7 +6,7 @@ import { ruleSettingsStore } from './ruleSettings'
  */
 export function getDisabledRules(rules: RuffRule[]): RuffRule[] {
   return rules.filter((rule) => {
-    const settings = ruleSettingsStore.getSync(rule.code)
+    const settings = ruleSettingsStore.getSyncWithStorage(rule.code)
     return !settings.enabled
   })
 }
@@ -38,7 +38,7 @@ ignore = [
   // 各ルールを追加
   sortedRules.forEach((rule, index) => {
     const isLast = index === sortedRules.length - 1
-    const settings = ruleSettingsStore.getSync(rule.code)
+    const settings = ruleSettingsStore.getSyncWithStorage(rule.code)
     const comment = settings.comment ? `  # ${settings.comment}` : ''
     toml += `    "${rule.code}",${comment}${isLast ? '' : '\n'}`
   })
@@ -87,7 +87,7 @@ ignore = [
   // 各ルールを追加
   sortedRules.forEach((rule, index) => {
     const isLast = index === sortedRules.length - 1
-    const settings = ruleSettingsStore.getSync(rule.code)
+    const settings = ruleSettingsStore.getSyncWithStorage(rule.code)
     const comment = settings.comment ? `  # ${settings.comment}` : ''
     toml += `    "${rule.code}",${comment}${isLast ? '' : '\n'}`
   })
