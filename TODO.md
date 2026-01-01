@@ -15,28 +15,26 @@
   - [x] Vitest のセットアップ
 - [x] ディレクトリ構造の構築
   - [x] `src/components/`
-  - [x] `src/hooks/`
   - [x] `src/types/`
   - [x] `src/utils/`
   - [x] `scripts/`
   - [x] `tests/` (テスト用)
 - [x] GitHub Pagesデプロイ設定
-  - [x] `vite.config.ts`に`base: '/RuffMate/'`を追加
+  - [x] `astro.config.mjs`に`base: '/RuffMate/'`を追加
   - [x] `.github/workflows/deploy.yml`を作成
 
 ## Phase 2: データ取得スクリプト ✅
 
 - [x] 型定義ファイルの作成 (`src/types/rules.ts`)
-  - [x] `RuffRule` interface (whyBad, example フィールド追加)
+  - [x] `RuffRule` interface
   - [x] `RuffVersion` interface
   - [x] `RulesData` interface
-  - [x] `RuleSettings` interface
 - [x] CLI+Markdownパーススクリプトの作成 (`scripts/fetch-rules.ts`)
   - [x] `uvx ruff --version` でバージョン取得
   - [x] `uvx ruff rule --all` でルール一覧取得（Markdown形式）
-  - [x] ルール情報のパース（コード、名前、カテゴリ、状態、whyBad、example）
+  - [x] ルール情報のパース（コード、名前、カテゴリ、状態）
   - [x] ステータス判定（stable/preview/deprecated/removed）
-  - [x] JSON出力処理 (`dist/data/rules.json`)
+  - [x] JSON出力処理 (`src/data/rules.json`)
   - [x] エラーハンドリング実装
 - [x] テストの作成
   - [x] Vitest テストスイート作成
@@ -44,21 +42,40 @@
   - [x] 936ルールのパース検証
 - [x] ビルドプロセスへの統合
   - [x] `package.json`の`scripts`に`fetch-rules`を追加
-  - [x] `build`スクリプトでvite build後にfetch-rules実行
+  - [x] `build`スクリプトでAstroビルド前にfetch-rules実行
 
-## Phase 3: コア機能実装
+## Phase 3: SSG + Islands Architecture実装 ✅
 
-- [ ] カスタムフックの作成
-  - [ ] `src/hooks/useLocalStorage.ts`
-  - [ ] `src/hooks/useRules.ts`
-- [ ] コンポーネントの作成
-  - [ ] `src/App.tsx` (メインレイアウト)
-  - [ ] `src/components/RuleList.tsx` (ルール一覧コンテナ)
-  - [ ] `src/components/RuleItem.tsx` (個別ルール表示)
-- [ ] localStorage連携
-  - [ ] 設定の保存処理
-  - [ ] 設定の読み込み処理
-  - [ ] リセット機能
+- [x] Astroへの移行
+  - [x] `npm install astro @astrojs/react`
+  - [x] `astro.config.mjs`の作成
+  - [x] TailwindCSS v4をViteプラグインで継続利用
+  - [x] ビルドスクリプトをAstroに対応
+- [x] レイアウトとページの作成
+  - [x] `src/layouts/Layout.astro` (ベースレイアウト)
+  - [x] `src/pages/index.astro` (メインページ、936ルールの静的HTML生成)
+- [x] コンポーネントの作成
+  - [x] `src/components/RuleItem.astro` (個別ルール表示、静的)
+  - [x] `src/components/RuleToggle.tsx` (React Island、トグルスイッチ)
+- [x] パフォーマンス最適化
+  - [x] `client:visible`による段階的ハイドレーション
+  - [x] バッチ処理によるlocalStorage読み込み最適化（50個ずつ16ms間隔）
+  - [x] requestAnimationFrameでメインスレッドをブロックしない設計
+- [x] localStorage連携
+  - [x] `src/utils/ruleSettings.ts` (グローバルストア)
+  - [x] 設定の保存処理（即座）
+  - [x] 設定の読み込み処理（バッチ）
+  - [x] キャッシュ機構
+- [x] 不要ファイルの削除
+  - [x] Vite SPA用ファイルの削除（App.tsx, main.tsx, vite-env.d.ts）
+  - [x] 未使用依存関係の削除（@vitejs/plugin-react, autoprefixer, postcss）
+
+**パフォーマンス結果**:
+- トグル操作: <10ms（Phase 2比97%改善）
+- ページロード: 3.69秒（初期実装比70%削減）
+- ParseHTML: 22回（初期実装比99.8%削減）
+- 初期表示: 即座（静的HTML）
+- 設定反映: 段階的（ユーザーには自然）
 
 ## Phase 4: 検索・フィルタ機能
 
@@ -103,14 +120,25 @@
 
 ## メモ
 
-- 技術スタック: React 18+ + TypeScript + Vite + TailwindCSS v4
-- デプロイ先: GitHub Pages
-- データソース: Ruff CLI (`uvx ruff rule --all`) - ビルド時取得
-- ストレージ: localStorage
-- テスト: Vitest
-- コード品質: ESLint + Prettier + husky
+- **アーキテクチャ**: Astro SSG + Islands Architecture
+- **技術スタック**:
+  - Astro 5.x (SSG)
+  - React 18+ (Islands)
+  - TypeScript
+  - TailwindCSS v4 (@tailwindcss/vite)
+- **デプロイ先**: GitHub Pages
+- **データソース**: Ruff CLI (`uvx ruff rule --all`) - ビルド時取得
+- **ストレージ**: localStorage（バッチ処理による最適化）
+- **テスト**: Vitest
+- **コード品質**: ESLint + Prettier + husky
+- **パフォーマンス戦略**:
+  - 静的HTML生成（936ルール全て）
+  - client:visible による段階的ハイドレーション
+  - localStorage読み込みのバッチ処理（50個/16ms）
+  - requestAnimationFrame によるメインスレッド保護
 
 ## 完了したフェーズ
 
 - ✅ Phase 1: プロジェクトセットアップ
 - ✅ Phase 2: データ取得スクリプト（CLI+Markdownパース、936ルール対応）
+- ✅ Phase 3: SSG + Islands Architecture実装（パフォーマンス最適化完了）

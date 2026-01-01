@@ -24,6 +24,7 @@ src/data/rules.json
 
 # Analysis scripts
 analyze-trace.cjs
+analyze-trace2.cjs
 
 # Test output
 tests/output/
