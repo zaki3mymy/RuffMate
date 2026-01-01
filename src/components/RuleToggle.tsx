@@ -36,7 +36,7 @@ export default function RuleToggle({ ruleCode }: RuleToggleProps) {
   }
 
   return (
-    <div className="flex-shrink-0">
+    <div className="flex-shrink-0 flex flex-col items-end gap-2">
       <button
         onClick={handleToggle}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
@@ -57,7 +57,7 @@ export default function RuleToggle({ ruleCode }: RuleToggleProps) {
           value={comment}
           onChange={(e) => handleCommentChange(e.target.value)}
           placeholder="除外理由"
-          className="mt-2 w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       )}
     </div>
