@@ -41,6 +41,13 @@ class FilterState {
     this.applyFilter()
   }
 
+  // カテゴリとステータスのみクリア（検索キーワードは保持）
+  clearCategoriesAndStatuses(): void {
+    this.categories = []
+    this.statuses = []
+    this.applyFilter()
+  }
+
   // フィルタを適用（debounce付き）
   private applyFilter(): void {
     debouncedFilter(this.getCriteria())

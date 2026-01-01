@@ -25,6 +25,18 @@ export default function RuleToggle({ ruleCode }: RuleToggleProps) {
     }
   }, [ruleCode])
 
+  // settings-resetイベントのリスナー
+  useEffect(() => {
+    const handleReset = () => {
+      // デフォルト値（enabled: true, comment: ''）に戻す
+      setEnabled(true)
+      setComment('')
+    }
+
+    window.addEventListener('settings-reset', handleReset)
+    return () => window.removeEventListener('settings-reset', handleReset)
+  }, [])
+
   const handleToggle = () => {
     const newEnabled = !enabled
     setEnabled(newEnabled)

@@ -121,11 +121,23 @@ class RuleSettingsStore {
     }
   }
 
-  // テスト用: キャッシュをクリア
-  clearCache() {
+  // 全ての設定をリセット（キャッシュ + localStorage）
+  clearAll() {
     this.cache.clear()
     this.loadQueue = []
     this.isProcessing = false
+
+    if (typeof window !== 'undefined') {
+      try {
+        // localStorage から全ての rule-* キーを削除
+        const keysToDelete = Object.keys(localStorage).filter((key) =>
+          key.startsWith('rule-')
+        )
+        keysToDelete.forEach((key) => localStorage.removeItem(key))
+      } catch (error) {
+        console.error('Failed to clear localStorage:', error)
+      }
+    }
   }
 }
 
