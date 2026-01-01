@@ -4,9 +4,9 @@ import RuleItem from '../components/RuleItem.astro'
 import type { RulesData } from '../types/rules'
 
 // ビルド時にrules.jsonを読み込む
-const rulesData: RulesData = await import('../data/rules.json').then(
+const rulesData = (await import('../data/rules.json').then(
   (m) => m.default
-)
+)) as RulesData
 const { rules, version } = rulesData
 ---
 
