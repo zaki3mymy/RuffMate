@@ -1,48 +1,39 @@
 import { useState, useEffect } from 'react'
+import { ruleSettingsStore } from '../utils/ruleSettings'
 
 interface RuleToggleProps {
   ruleCode: string
 }
 
 export default function RuleToggle({ ruleCode }: RuleToggleProps) {
-  const [enabled, setEnabled] = useState(true)
-  const [comment, setComment] = useState('')
+  // グローバルストアから初期値を取得（同期処理）
+  const initialSettings = typeof window !== 'undefined'
+    ? ruleSettingsStore.get(ruleCode)
+    : { enabled: true, comment: '' }
 
-  // クライアントサイドでのみlocalStorage読み込み
+  const [enabled, setEnabled] = useState(initialSettings.enabled)
+  const [comment, setComment] = useState(initialSettings.comment || '')
+
+  // ハイドレーション後に念のため再チェック（通常は不要）
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const stored = localStorage.getItem(`rule-${ruleCode}`)
-    if (stored) {
-      try {
-        const data = JSON.parse(stored)
-        setEnabled(data.enabled ?? true)
-        setComment(data.comment ?? '')
-      } catch (error) {
-        console.error(`Failed to parse localStorage for ${ruleCode}:`, error)
-      }
+    const settings = ruleSettingsStore.get(ruleCode)
+    if (settings.enabled !== enabled || settings.comment !== comment) {
+      setEnabled(settings.enabled)
+      setComment(settings.comment || '')
     }
   }, [ruleCode])
 
   const handleToggle = () => {
     const newEnabled = !enabled
     setEnabled(newEnabled)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        `rule-${ruleCode}`,
-        JSON.stringify({ enabled: newEnabled, comment })
-      )
-    }
+    ruleSettingsStore.set(ruleCode, { enabled: newEnabled, comment })
   }
 
   const handleCommentChange = (value: string) => {
     setComment(value)
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        `rule-${ruleCode}`,
-        JSON.stringify({ enabled, comment: value })
-      )
-    }
+    ruleSettingsStore.set(ruleCode, { enabled, comment: value })
   }
 
   return (
