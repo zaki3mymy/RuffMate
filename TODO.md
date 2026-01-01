@@ -77,28 +77,28 @@
 - 初期表示: 即座（静的HTML）
 - 設定反映: 段階的（ユーザーには自然）
 
-## Phase 4: 検索・フィルタ機能
+## Phase 4: 検索・フィルタ機能 ✅
 
 **注意**: Phase 3のSSG化により、DOM操作ベースのハイブリッドアプローチで実装
 
-- [ ] RuleItem.astroの修正
-  - [ ] `data-*`属性の追加（code, category, name, summary, status）
-  - [ ] `.rule-item` クラスの追加
-- [ ] フィルタロジックの実装 (`src/utils/filterRules.ts`)
-  - [ ] `FilterCriteria`型定義
-  - [ ] `filterRules()`: DOM操作ベースのフィルタリング
-  - [ ] `matchesCriteria()`: フィルタ条件のマッチング
-  - [ ] `debounce()`: 遅延処理
-  - [ ] カスタムイベント発行
-- [ ] コンポーネントの作成
-  - [ ] `src/components/SearchBar.tsx` (React Island, client:load)
-  - [ ] `src/components/FilterPanel.tsx` (React Island, client:load)
-- [ ] index.astroへの統合
-  - [ ] カテゴリ一覧の抽出
-  - [ ] SearchBar/FilterPanel配置（sticky）
-- [ ] テストの作成
-  - [ ] `tests/filterRules.test.ts` (ユニットテスト)
-  - [ ] パフォーマンス計測（目標: 5-10ms）
+- [x] RuleItem.astroの修正
+  - [x] `data-*`属性の追加（code, category, name, summary, status）
+  - [x] `.rule-item` クラスの追加
+- [x] フィルタロジックの実装 (`src/utils/filterRules.ts`)
+  - [x] `FilterCriteria`型定義
+  - [x] `filterRules()`: DOM操作ベースのフィルタリング
+  - [x] `matchesCriteria()`: フィルタ条件のマッチング
+  - [x] `debounce()`: 遅延処理
+  - [x] カスタムイベント発行
+- [x] コンポーネントの作成
+  - [x] `src/components/SearchBar.tsx` (React Island, client:load)
+  - [x] `src/components/FilterPanel.tsx` (React Island, client:load)
+- [x] index.astroへの統合
+  - [x] カテゴリ一覧の抽出
+  - [x] SearchBar/FilterPanel配置（sticky）
+- [x] テストの作成
+  - [x] `tests/filterRules.test.ts` (ユニットテスト)
+  - [x] パフォーマンス計測（目標: 5-10ms）
 - [ ] (オプション) E2Eテスト
   - [ ] Playwrightセットアップ
   - [ ] フィルタリング動作の検証
@@ -165,3 +165,4 @@
 - ✅ Phase 1: プロジェクトセットアップ
 - ✅ Phase 2: データ取得スクリプト（CLI+Markdownパース、936ルール対応）
 - ✅ Phase 3: SSG + Islands Architecture実装（パフォーマンス最適化完了）
+- ✅ Phase 4: 検索・フィルタ機能（DOM操作ベース、E2Eテスト除く）
