@@ -73,7 +73,7 @@ export default function ExportButton({
     <>
       <button
         onClick={handleExport}
-        className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="w-full rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 md:w-auto"
         aria-label="設定をエクスポート"
       >
         エクスポート
@@ -85,13 +85,13 @@ export default function ExportButton({
           onClick={handleClose}
         >
           <div
-            className="max-h-[80vh] w-full max-w-3xl overflow-hidden rounded-lg bg-white shadow-xl"
+            className="mx-4 max-h-[80vh] w-full max-w-3xl overflow-hidden rounded-lg bg-white shadow-xl md:mx-0"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ヘッダー */}
-            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
                   pyproject.toml プレビュー
                 </h2>
                 <button
@@ -118,18 +118,18 @@ export default function ExportButton({
             </div>
 
             {/* コンテンツ */}
-            <div className="overflow-y-auto p-6">
-              <pre className="overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm text-gray-100">
+            <div className="overflow-y-auto p-4 sm:p-6">
+              <pre className="overflow-x-auto rounded-lg bg-gray-900 p-3 text-xs text-gray-100 sm:p-4 sm:text-sm">
                 <code>{tomlContent}</code>
               </pre>
             </div>
 
             {/* フッター */}
-            <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
-              <div className="flex items-center justify-end gap-3">
+            <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
+              <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
                 <button
                   onClick={handleCopyToClipboard}
-                  className={`rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  className={`w-full rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto ${
                     copyStatus === 'copied'
                       ? 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500'
                       : copyStatus === 'error'
@@ -145,7 +145,7 @@ export default function ExportButton({
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
                 >
                   ファイルをダウンロード
                 </button>

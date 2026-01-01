@@ -82,12 +82,12 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
 
   return (
     <div className="border-t border-gray-200 bg-gray-50 p-4">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
         {/* カテゴリフィルタ */}
-        <div className="relative" ref={categoriesRef}>
+        <div className="relative w-full md:w-auto" ref={categoriesRef}>
           <button
             onClick={() => setShowCategories(!showCategories)}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 md:w-auto"
             aria-expanded={showCategories}
             aria-haspopup="true"
           >
@@ -100,7 +100,7 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
           </button>
 
           {showCategories && (
-            <div className="absolute left-0 top-full z-20 mt-2 max-h-80 w-64 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+            <div className="absolute left-0 top-full z-20 mt-2 max-h-80 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg md:w-64">
               <div className="p-2">
                 {categories.map((category) => (
                   <label
@@ -122,10 +122,10 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
         </div>
 
         {/* ステータスフィルタ */}
-        <div className="relative" ref={statusesRef}>
+        <div className="relative w-full md:w-auto" ref={statusesRef}>
           <button
             onClick={() => setShowStatuses(!showStatuses)}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 md:w-auto"
             aria-expanded={showStatuses}
             aria-haspopup="true"
           >
@@ -138,7 +138,7 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
           </button>
 
           {showStatuses && (
-            <div className="absolute left-0 top-full z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+            <div className="absolute left-0 top-full z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg md:w-48">
               <div className="p-2">
                 {STATUSES.map((status) => (
                   <label
@@ -165,7 +165,7 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
         {hasActiveFilters && (
           <button
             onClick={handleClear}
-            className="rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
+            className="w-full rounded-lg bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 md:w-auto"
           >
             クリア
           </button>

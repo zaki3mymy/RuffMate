@@ -63,7 +63,7 @@ export default function SearchBar() {
       </div>
       {resultCount !== null && (
         <span
-          className="text-sm text-gray-600"
+          className="hidden text-sm text-gray-600 md:inline"
           role="status"
           aria-live="polite"
         >
