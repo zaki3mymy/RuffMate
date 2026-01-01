@@ -77,21 +77,39 @@
 - 初期表示: 即座（静的HTML）
 - 設定反映: 段階的（ユーザーには自然）
 
-## Phase 4: 検索・フィルタ機能
+## Phase 4: 検索・フィルタ機能 ✅
 
-- [ ] フィルタロジックの実装 (`src/utils/filterRules.ts`)
-- [ ] コンポーネントの作成
-  - [ ] `src/components/SearchBar.tsx`
-  - [ ] `src/components/FilterPanel.tsx`
-- [ ] パフォーマンス最適化
-  - [ ] `useMemo`でフィルタ結果をメモ化
-  - [ ] 検索のdebounce処理
+**注意**: Phase 3のSSG化により、DOM操作ベースのハイブリッドアプローチで実装
+
+- [x] RuleItem.astroの修正
+  - [x] `data-*`属性の追加（code, category, name, summary, status）
+  - [x] `.rule-item` クラスの追加
+- [x] フィルタロジックの実装 (`src/utils/filterRules.ts`)
+  - [x] `FilterCriteria`型定義
+  - [x] `filterRules()`: DOM操作ベースのフィルタリング
+  - [x] `matchesCriteria()`: フィルタ条件のマッチング
+  - [x] `debounce()`: 遅延処理
+  - [x] カスタムイベント発行
+- [x] コンポーネントの作成
+  - [x] `src/components/SearchBar.tsx` (React Island, client:load)
+  - [x] `src/components/FilterPanel.tsx` (React Island, client:load)
+- [x] index.astroへの統合
+  - [x] カテゴリ一覧の抽出
+  - [x] SearchBar/FilterPanel配置（sticky）
+- [x] テストの作成
+  - [x] `tests/filterRules.test.ts` (ユニットテスト)
+  - [x] パフォーマンス計測（目標: 5-10ms）
+- [x] (オプション) E2Eテスト
+  - [x] Playwrightセットアップ
+  - [x] フィルタリング動作の検証
 
 ## Phase 5: エクスポート機能
 
 - [ ] TOML生成ロジック (`src/utils/exportToml.ts`)
+  - [ ] `ruleSettingsStore.getSync()`を活用
+  - [ ] pyproject.toml形式の出力
 - [ ] コンポーネントの作成
-  - [ ] `src/components/ExportButton.tsx`
+  - [ ] `src/components/ExportButton.tsx` (React Island)
 - [ ] クリップボードAPI実装
 - [ ] ファイルダウンロード実装
 - [ ] プレビュー機能（モーダル）
@@ -99,23 +117,28 @@
 ## Phase 6: UI/UX改善
 
 - [ ] レスポンシブデザイン対応
-- [ ] ローディング状態の実装
 - [ ] エラーハンドリングの強化
-- [ ] トースト通知の実装
+  - [ ] トースト通知の実装
 - [ ] アクセシビリティ改善
-- [ ] アニメーションの追加
+  - [ ] キーボードナビゲーション
+  - [ ] ARIA属性の追加
+- [ ] アニメーション（CSS transition）
+
+**注意**: 静的HTMLは即座に表示されるため、従来のローディング表示は不要
 
 ## Phase 7: ドキュメント・デプロイ
 
-- [ ] README.md更新（詳細版）
-- [ ] 使い方ドキュメント作成 (`docs/usage.md`)
+- [ ] README.md更新
+  - [ ] アーキテクチャ説明（SSG + Islands）
+  - [ ] パフォーマンス特性の記載
 - [ ] 開発者向けドキュメント作成 (`docs/development.md`)
+  - [ ] フィルタリングの仕組み
+  - [ ] React Islandとの連携方法
 - [ ] GitHub Pagesへのデプロイ
 - [ ] 最終テスト
   - [ ] 機能テスト
   - [ ] パフォーマンステスト
   - [ ] ブラウザ互換性テスト
-  - [ ] モバイル対応テスト
   - [ ] アクセシビリティテスト
 
 ## メモ
@@ -142,3 +165,4 @@
 - ✅ Phase 1: プロジェクトセットアップ
 - ✅ Phase 2: データ取得スクリプト（CLI+Markdownパース、936ルール対応）
 - ✅ Phase 3: SSG + Islands Architecture実装（パフォーマンス最適化完了）
+- ✅ Phase 4: 検索・フィルタ機能（DOM操作ベース、E2Eテスト除く）
