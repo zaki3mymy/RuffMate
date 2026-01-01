@@ -1,7 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ruleSettingsStore } from '../src/utils/ruleSettings'
 
 describe('RuleSettingsStore', () => {
+  beforeEach(() => {
+    // 各テストの前にキャッシュをクリア
+    ruleSettingsStore.clearCache()
+    localStorage.clear()
+  })
+
   describe('getSync', () => {
     it('キャッシュにない場合はデフォルト値を返す', () => {
       const result = ruleSettingsStore.getSync('E501')
@@ -20,6 +26,53 @@ describe('RuleSettingsStore', () => {
       // getSyncで取得
       const result = ruleSettingsStore.getSync('E501')
       expect(result).toEqual({ enabled: true })
+    })
+  })
+
+  describe('getSyncWithStorage', () => {
+    it('キャッシュにある場合はキャッシュから返す', () => {
+      ruleSettingsStore.set('E501', { enabled: false, comment: 'test' })
+
+      const result = ruleSettingsStore.getSyncWithStorage('E501')
+      expect(result).toEqual({ enabled: false, comment: 'test' })
+    })
+
+    it('キャッシュになくlocalStorageにある場合はlocalStorageから読む', () => {
+      ruleSettingsStore.clearCache()
+      localStorage.setItem(
+        'rule-E501',
+        JSON.stringify({ enabled: false, comment: 'stored' })
+      )
+
+      const result = ruleSettingsStore.getSyncWithStorage('E501')
+      expect(result).toEqual({ enabled: false, comment: 'stored' })
+
+      // キャッシュにも追加されているか確認
+      const cached = ruleSettingsStore.getSync('E501')
+      expect(cached).toEqual({ enabled: false, comment: 'stored' })
+    })
+
+    it('キャッシュにもlocalStorageにもない場合はデフォルト値を返す', () => {
+      ruleSettingsStore.clearCache()
+      localStorage.removeItem('rule-E501')
+
+      const result = ruleSettingsStore.getSyncWithStorage('E501')
+      expect(result).toEqual({ enabled: true })
+    })
+
+    it('localStorageの読み込みエラー時はデフォルト値を返す', () => {
+      ruleSettingsStore.clearCache()
+      localStorage.setItem('rule-E501', 'invalid json')
+
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+
+      const result = ruleSettingsStore.getSyncWithStorage('E501')
+      expect(result).toEqual({ enabled: true })
+      expect(consoleErrorSpy).toHaveBeenCalled()
+
+      consoleErrorSpy.mockRestore()
     })
   })
 
