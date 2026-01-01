@@ -7,11 +7,11 @@ interface RuleToggleProps {
 export default function RuleToggle({ ruleCode }: RuleToggleProps) {
   const [enabled, setEnabled] = useState(true)
   const [comment, setComment] = useState('')
-  const [isClient, setIsClient] = useState(false)
 
   // クライアントサイドでのみlocalStorage読み込み
   useEffect(() => {
-    setIsClient(true)
+    if (typeof window === 'undefined') return
+
     const stored = localStorage.getItem(`rule-${ruleCode}`)
     if (stored) {
       try {
@@ -27,21 +27,23 @@ export default function RuleToggle({ ruleCode }: RuleToggleProps) {
   const handleToggle = () => {
     const newEnabled = !enabled
     setEnabled(newEnabled)
-    localStorage.setItem(
-      `rule-${ruleCode}`,
-      JSON.stringify({ enabled: newEnabled, comment })
-    )
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        `rule-${ruleCode}`,
+        JSON.stringify({ enabled: newEnabled, comment })
+      )
+    }
   }
 
   const handleCommentChange = (value: string) => {
     setComment(value)
-    localStorage.setItem(
-      `rule-${ruleCode}`,
-      JSON.stringify({ enabled, comment: value })
-    )
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        `rule-${ruleCode}`,
+        JSON.stringify({ enabled, comment: value })
+      )
+    }
   }
-
-  if (!isClient) return null // SSR時は何も表示しない
 
   return (
     <div className="flex-shrink-0">
