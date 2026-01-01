@@ -4,39 +4,91 @@ interface RuleSettingData {
   comment?: string
 }
 
+type LoadCallback = (data: RuleSettingData) => void
+
 class RuleSettingsStore {
-  private settings: Map<string, RuleSettingData> = new Map()
-  private loaded = false
+  private cache: Map<string, RuleSettingData> = new Map()
+  private loadQueue: Array<{ ruleCode: string; callback: LoadCallback }> = []
+  private isProcessing = false
+  private readonly BATCH_SIZE = 50 // 50個ずつ処理
+  private readonly BATCH_DELAY = 16 // 16ms間隔（1フレーム）
 
-  // ページロード時に一度だけ全設定を読み込む
-  loadAll() {
-    if (this.loaded || typeof window === 'undefined') return
+  // 同期取得（キャッシュのみ、localStorageは読まない）
+  getSync(ruleCode: string): RuleSettingData {
+    if (this.cache.has(ruleCode)) {
+      return this.cache.get(ruleCode)!
+    }
+    // デフォルト値を返す（まだ読み込まれていない）
+    return { enabled: true }
+  }
 
-    // localStorageから全てのrule-*キーを読み込む
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key && key.startsWith('rule-')) {
-        try {
-          const ruleCode = key.replace('rule-', '')
-          const data = JSON.parse(localStorage.getItem(key) || '{}')
-          this.settings.set(ruleCode, data)
-        } catch (error) {
-          console.error(`Failed to parse settings for ${key}:`, error)
-        }
-      }
+  // 非同期読み込み（キューに追加してバッチ処理）
+  async load(ruleCode: string, callback: LoadCallback): Promise<void> {
+    // 既にキャッシュにあれば即座にコールバック
+    if (this.cache.has(ruleCode)) {
+      callback(this.cache.get(ruleCode)!)
+      return
     }
 
-    this.loaded = true
+    // キューに追加
+    this.loadQueue.push({ ruleCode, callback })
+
+    // バッチ処理開始
+    if (!this.isProcessing) {
+      this.processBatch()
+    }
   }
 
-  // 設定を取得
-  get(ruleCode: string): RuleSettingData {
-    return this.settings.get(ruleCode) || { enabled: true }
+  private processBatch() {
+    if (this.loadQueue.length === 0) {
+      this.isProcessing = false
+      return
+    }
+
+    this.isProcessing = true
+
+    // 次のフレームで処理
+    requestAnimationFrame(() => {
+      const batch = this.loadQueue.splice(0, this.BATCH_SIZE)
+
+      // バッチ内の全てのルールをlocalStorageから読み込み
+      for (const { ruleCode, callback } of batch) {
+        let data: RuleSettingData
+
+        if (typeof window !== 'undefined') {
+          try {
+            const stored = localStorage.getItem(`rule-${ruleCode}`)
+            if (stored) {
+              data = JSON.parse(stored)
+              this.cache.set(ruleCode, data)
+            } else {
+              data = { enabled: true }
+              this.cache.set(ruleCode, data)
+            }
+          } catch (error) {
+            console.error(`Failed to load ${ruleCode}:`, error)
+            data = { enabled: true }
+            this.cache.set(ruleCode, data)
+          }
+        } else {
+          data = { enabled: true }
+        }
+
+        callback(data)
+      }
+
+      // 次のバッチを処理（遅延を入れる）
+      if (this.loadQueue.length > 0) {
+        setTimeout(() => this.processBatch(), this.BATCH_DELAY)
+      } else {
+        this.isProcessing = false
+      }
+    })
   }
 
-  // 設定を保存
+  // 設定を保存（キャッシュも更新）
   set(ruleCode: string, data: RuleSettingData) {
-    this.settings.set(ruleCode, data)
+    this.cache.set(ruleCode, data)
     if (typeof window !== 'undefined') {
       localStorage.setItem(`rule-${ruleCode}`, JSON.stringify(data))
     }
@@ -45,8 +97,3 @@ class RuleSettingsStore {
 
 // グローバルインスタンス
 export const ruleSettingsStore = new RuleSettingsStore()
-
-// ブラウザ環境でのみ自動ロード
-if (typeof window !== 'undefined') {
-  ruleSettingsStore.loadAll()
-}

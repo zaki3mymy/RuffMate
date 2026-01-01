@@ -6,22 +6,21 @@ interface RuleToggleProps {
 }
 
 export default function RuleToggle({ ruleCode }: RuleToggleProps) {
-  // グローバルストアから初期値を取得（同期処理）
+  // 初期値はデフォルト（キャッシュから同期取得）
   const initialSettings = typeof window !== 'undefined'
-    ? ruleSettingsStore.get(ruleCode)
+    ? ruleSettingsStore.getSync(ruleCode)
     : { enabled: true, comment: '' }
 
   const [enabled, setEnabled] = useState(initialSettings.enabled)
   const [comment, setComment] = useState(initialSettings.comment || '')
 
-  // ハイドレーション後に念のため再チェック（通常は不要）
+  // マウント時に非同期でlocalStorageから読み込み（バッチ処理）
   useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const settings = ruleSettingsStore.get(ruleCode)
-    if (settings.enabled !== enabled || settings.comment !== comment) {
-      setEnabled(settings.enabled)
-      setComment(settings.comment || '')
+    if (typeof window !== 'undefined') {
+      ruleSettingsStore.load(ruleCode, (data) => {
+        setEnabled(data.enabled)
+        setComment(data.comment || '')
+      })
     }
   }, [ruleCode])
 
