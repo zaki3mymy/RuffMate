@@ -72,7 +72,9 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
   const handleClear = () => {
     setSelectedCategories([])
     setSelectedStatuses([])
-    filterState.clear()
+    // 検索キーワードはクリアせず、カテゴリとステータスのみクリア
+    filterState.setCategories([])
+    filterState.setStatuses([])
   }
 
   const hasActiveFilters =
