@@ -7,9 +7,10 @@ interface RuleToggleProps {
 
 export default function RuleToggle({ ruleCode }: RuleToggleProps) {
   // 初期値はデフォルト（キャッシュから同期取得）
-  const initialSettings = typeof window !== 'undefined'
-    ? ruleSettingsStore.getSync(ruleCode)
-    : { enabled: true, comment: '' }
+  const initialSettings =
+    typeof window !== 'undefined'
+      ? ruleSettingsStore.getSync(ruleCode)
+      : { enabled: true, comment: '' }
 
   const [enabled, setEnabled] = useState(initialSettings.enabled)
   const [comment, setComment] = useState(initialSettings.comment || '')
