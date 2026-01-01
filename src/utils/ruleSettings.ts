@@ -93,6 +93,13 @@ class RuleSettingsStore {
       localStorage.setItem(`rule-${ruleCode}`, JSON.stringify(data))
     }
   }
+
+  // テスト用: キャッシュをクリア
+  clearCache() {
+    this.cache.clear()
+    this.loadQueue = []
+    this.isProcessing = false
+  }
 }
 
 // グローバルインスタンス
