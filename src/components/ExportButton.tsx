@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { RuffRule } from '../types/rules'
 import { generateTomlWithMetadata } from '../utils/exportToml'
 
@@ -23,6 +23,23 @@ export default function ExportButton({
     setShowModal(true)
     setCopyStatus('idle')
   }
+
+  // ESCキーでモーダルを閉じる
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showModal) {
+        setShowModal(false)
+      }
+    }
+
+    if (showModal) {
+      document.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showModal])
 
   const handleCopyToClipboard = async () => {
     try {
