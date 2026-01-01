@@ -1,13 +1,10 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
+// Vitest configuration only (Astro handles the build)
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  base: '/RuffMate/',
   test: {
     globals: true,
     environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
   },
 })
