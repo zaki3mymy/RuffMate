@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { debouncedFilter, type FilterResult } from '../utils/filterRules'
+import { type FilterResult } from '../utils/filterRules'
+import { filterState } from '../utils/filterState'
 
 export default function SearchBar() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -20,11 +21,7 @@ export default function SearchBar() {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value)
-    debouncedFilter({
-      searchTerm: value,
-      categories: [],
-      statuses: [],
-    })
+    filterState.setSearchTerm(value)
   }
 
   return (
