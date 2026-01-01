@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { filterState } from '../utils/filterState'
 
 interface FilterPanelProps {
@@ -17,6 +17,39 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
   const [showCategories, setShowCategories] = useState(false)
   const [showStatuses, setShowStatuses] = useState(false)
+
+  const categoriesRef = useRef<HTMLDivElement>(null)
+  const statusesRef = useRef<HTMLDivElement>(null)
+
+  // 外側クリックでドロップダウンを閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // カテゴリドロップダウンの外側をクリックした場合
+      if (
+        categoriesRef.current &&
+        !categoriesRef.current.contains(event.target as Node)
+      ) {
+        setShowCategories(false)
+      }
+
+      // ステータスドロップダウンの外側をクリックした場合
+      if (
+        statusesRef.current &&
+        !statusesRef.current.contains(event.target as Node)
+      ) {
+        setShowStatuses(false)
+      }
+    }
+
+    // ドロップダウンが開いているときのみイベントリスナーを追加
+    if (showCategories || showStatuses) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showCategories, showStatuses])
 
   const handleCategoryChange = (category: string) => {
     const newCategories = selectedCategories.includes(category)
@@ -49,7 +82,7 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
     <div className="border-t border-gray-200 bg-gray-50 p-4">
       <div className="flex items-center gap-4">
         {/* カテゴリフィルタ */}
-        <div className="relative">
+        <div className="relative" ref={categoriesRef}>
           <button
             onClick={() => setShowCategories(!showCategories)}
             className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -87,7 +120,7 @@ export default function FilterPanel({ categories }: FilterPanelProps) {
         </div>
 
         {/* ステータスフィルタ */}
-        <div className="relative">
+        <div className="relative" ref={statusesRef}>
           <button
             onClick={() => setShowStatuses(!showStatuses)}
             className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
