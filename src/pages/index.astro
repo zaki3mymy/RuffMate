@@ -4,6 +4,7 @@ import RuleItem from '../components/RuleItem.astro'
 import SearchBar from '../components/SearchBar'
 import FilterPanel from '../components/FilterPanel'
 import ExportButton from '../components/ExportButton'
+import ResetButton from '../components/ResetButton'
 import type { RulesData } from '../types/rules'
 
 // ビルド時にrules.jsonを読み込む
@@ -43,7 +44,10 @@ const uniqueCategories = [...new Set(rules.map((r) => r.categoryCode))].sort()
       <div class="flex flex-col border-t border-gray-200 md:flex-row md:items-center md:justify-between">
         <FilterPanel client:load categories={uniqueCategories} />
         <div class="border-t border-gray-200 px-4 py-4 md:border-t-0">
-          <ExportButton client:load rules={rules} ruffVersion={version.version} />
+          <div class="flex flex-col gap-2 md:flex-row md:gap-3">
+            <ExportButton client:load rules={rules} ruffVersion={version.version} />
+            <ResetButton client:load />
+          </div>
         </div>
       </div>
     </div>
