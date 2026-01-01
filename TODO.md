@@ -132,22 +132,27 @@
 
 **注意**: 静的HTMLは即座に表示されるため、従来のローディング表示は不要
 
-## Phase 7: ドキュメント・デプロイ
+## Phase 7: ドキュメント・デプロイ ⏳
 
-- [ ] README.md更新
-  - [ ] アーキテクチャ説明（SSG + Islands）
-  - [ ] パフォーマンス特性の記載
-- [ ] 開発者向けドキュメント作成 (`docs/development.md`)
-  - [ ] フィルタリングの仕組み
-  - [ ] React Islandとの連携方法
-- [ ] エクスポート機能の改善
-  - [ ] エクスポートされるURLを、アプリをホストするサーバーのURLに動的に変更
-- [ ] GitHub Pagesへのデプロイ
+- [x] README.md更新
+  - [x] ユーザー視点での全面改訂（問題解決、使い方、FAQ）
+  - [x] 実際のデプロイURLに更新（https://zaki3mymy.github.io/RuffMate/）
+- [x] 開発者向けドキュメント作成
+  - [x] `docs/architecture.md` - 技術アーキテクチャ詳細（SSG + Islands）
+  - [x] `docs/development.md` - 開発ガイド（フィルタリング、React Islands連携）
+  - [x] `docs/deployment.md` - デプロイガイド（Deploy Key設定手順）
+- [x] エクスポート機能の改善
+  - [x] エクスポートURLを動的取得（window.location.origin + pathname）
+- [x] GitHub Pagesへのデプロイ設定
+  - [x] GitHub Actions ワークフロー作成（peaceiris/actions-gh-pages）
+  - [x] Deploy Key設定（zaki3mymy.github.ioへの自動デプロイ）
+  - [x] Node.js 22（最新LTS）に更新
+  - [x] GitHub Actionをコミットハッシュで固定（セキュリティ対策）
 - [ ] 最終テスト
-  - [ ] 機能テスト
-  - [ ] パフォーマンステスト
-  - [ ] ブラウザ互換性テスト
-  - [ ] アクセシビリティテスト
+  - [ ] 機能テスト（検索、フィルタ、トグル、エクスポート）
+  - [ ] パフォーマンステスト（ページロード、フィルタリング速度）
+  - [ ] ブラウザ互換性テスト（Chrome, Firefox, Safari, Edge）
+  - [ ] モバイルテスト（レスポンシブデザイン確認）
 
 ## メモ
 
