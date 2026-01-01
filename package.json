@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run check && npm run fetch-rules && astro build",
+    "build": "npm run fetch-rules && npm run check && astro build",
     "preview": "astro preview",
     "fetch-rules": "tsx scripts/fetch-rules.ts",
     "test": "vitest",
