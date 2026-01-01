@@ -79,19 +79,37 @@
 
 ## Phase 4: 検索・フィルタ機能
 
+**注意**: Phase 3のSSG化により、DOM操作ベースのハイブリッドアプローチで実装
+
+- [ ] RuleItem.astroの修正
+  - [ ] `data-*`属性の追加（code, category, name, summary, status）
+  - [ ] `.rule-item` クラスの追加
 - [ ] フィルタロジックの実装 (`src/utils/filterRules.ts`)
+  - [ ] `FilterCriteria`型定義
+  - [ ] `filterRules()`: DOM操作ベースのフィルタリング
+  - [ ] `matchesCriteria()`: フィルタ条件のマッチング
+  - [ ] `debounce()`: 遅延処理
+  - [ ] カスタムイベント発行
 - [ ] コンポーネントの作成
-  - [ ] `src/components/SearchBar.tsx`
-  - [ ] `src/components/FilterPanel.tsx`
-- [ ] パフォーマンス最適化
-  - [ ] `useMemo`でフィルタ結果をメモ化
-  - [ ] 検索のdebounce処理
+  - [ ] `src/components/SearchBar.tsx` (React Island, client:load)
+  - [ ] `src/components/FilterPanel.tsx` (React Island, client:load)
+- [ ] index.astroへの統合
+  - [ ] カテゴリ一覧の抽出
+  - [ ] SearchBar/FilterPanel配置（sticky）
+- [ ] テストの作成
+  - [ ] `tests/filterRules.test.ts` (ユニットテスト)
+  - [ ] パフォーマンス計測（目標: 5-10ms）
+- [ ] (オプション) E2Eテスト
+  - [ ] Playwrightセットアップ
+  - [ ] フィルタリング動作の検証
 
 ## Phase 5: エクスポート機能
 
 - [ ] TOML生成ロジック (`src/utils/exportToml.ts`)
+  - [ ] `ruleSettingsStore.getSync()`を活用
+  - [ ] pyproject.toml形式の出力
 - [ ] コンポーネントの作成
-  - [ ] `src/components/ExportButton.tsx`
+  - [ ] `src/components/ExportButton.tsx` (React Island)
 - [ ] クリップボードAPI実装
 - [ ] ファイルダウンロード実装
 - [ ] プレビュー機能（モーダル）
@@ -99,23 +117,28 @@
 ## Phase 6: UI/UX改善
 
 - [ ] レスポンシブデザイン対応
-- [ ] ローディング状態の実装
 - [ ] エラーハンドリングの強化
-- [ ] トースト通知の実装
+  - [ ] トースト通知の実装
 - [ ] アクセシビリティ改善
-- [ ] アニメーションの追加
+  - [ ] キーボードナビゲーション
+  - [ ] ARIA属性の追加
+- [ ] アニメーション（CSS transition）
+
+**注意**: 静的HTMLは即座に表示されるため、従来のローディング表示は不要
 
 ## Phase 7: ドキュメント・デプロイ
 
-- [ ] README.md更新（詳細版）
-- [ ] 使い方ドキュメント作成 (`docs/usage.md`)
+- [ ] README.md更新
+  - [ ] アーキテクチャ説明（SSG + Islands）
+  - [ ] パフォーマンス特性の記載
 - [ ] 開発者向けドキュメント作成 (`docs/development.md`)
+  - [ ] フィルタリングの仕組み
+  - [ ] React Islandとの連携方法
 - [ ] GitHub Pagesへのデプロイ
 - [ ] 最終テスト
   - [ ] 機能テスト
   - [ ] パフォーマンステスト
   - [ ] ブラウザ互換性テスト
-  - [ ] モバイル対応テスト
   - [ ] アクセシビリティテスト
 
 ## メモ
