@@ -14,7 +14,7 @@
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/your-username/RuffMate.git
+git clone https://github.com/zaki3mymy/RuffMate.git
 cd RuffMate
 ```
 
