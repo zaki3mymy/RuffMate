@@ -103,16 +103,16 @@
   - [x] Playwrightセットアップ
   - [x] フィルタリング動作の検証
 
-## Phase 5: エクスポート機能
+## Phase 5: エクスポート機能 ✅
 
-- [ ] TOML生成ロジック (`src/utils/exportToml.ts`)
-  - [ ] `ruleSettingsStore.getSync()`を活用
-  - [ ] pyproject.toml形式の出力
-- [ ] コンポーネントの作成
-  - [ ] `src/components/ExportButton.tsx` (React Island)
-- [ ] クリップボードAPI実装
-- [ ] ファイルダウンロード実装
-- [ ] プレビュー機能（モーダル）
+- [x] TOML生成ロジック (`src/utils/exportToml.ts`)
+  - [x] `ruleSettingsStore.getSync()`を活用
+  - [x] pyproject.toml形式の出力
+- [x] コンポーネントの作成
+  - [x] `src/components/ExportButton.tsx` (React Island)
+- [x] クリップボードAPI実装
+- [x] ファイルダウンロード実装
+- [x] プレビュー機能（モーダル）
 
 ## Phase 6: UI/UX改善
 
@@ -165,4 +165,5 @@
 - ✅ Phase 1: プロジェクトセットアップ
 - ✅ Phase 2: データ取得スクリプト（CLI+Markdownパース、936ルール対応）
 - ✅ Phase 3: SSG + Islands Architecture実装（パフォーマンス最適化完了）
-- ✅ Phase 4: 検索・フィルタ機能（DOM操作ベース、E2Eテスト除く）
+- ✅ Phase 4: 検索・フィルタ機能（DOM操作ベース、E2Eテスト含む）
+- ✅ Phase 5: エクスポート機能（TOML生成、クリップボード、ダウンロード、プレビュー）
