@@ -27,8 +27,12 @@ beforeEach(() => {
 
   // グローバルに設定
   global.localStorage = localStorageMock as Storage
-  ;(global as unknown as { window: { localStorage: Storage } }).window = {
-    localStorage: localStorageMock,
+  // windowオブジェクト全体を上書きせず、localStorageだけを設定
+  if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+      writable: true,
+    })
   }
 
   // ruleSettingsStoreのキャッシュをクリア
