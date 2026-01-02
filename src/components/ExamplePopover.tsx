@@ -118,11 +118,11 @@ export default function ExamplePopover({
       {showPopover && (
         <div
           ref={popoverRef}
-          className="absolute right-0 top-full z-50 mt-2 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white p-4 shadow-xl"
+          className="absolute left-0 top-full z-50 mt-2 w-screen max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white p-4 shadow-xl md:w-auto md:max-w-3xl"
           role="tooltip"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-auto">
             <h3 className="mb-2 text-sm font-semibold text-gray-900">使用例</h3>
             <div className="prose prose-sm max-w-none">
               <ReactMarkdown
