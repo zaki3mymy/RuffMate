@@ -25,15 +25,12 @@ const uniqueCategories = [...new Set(rules.map((r) => r.categoryCode))].sort()
           RuffMate
         </h1>
         <p class="mt-1 text-sm text-gray-600 sm:mt-2">
-          Ruff設定管理ツール - ルールの有効/無効を切り替えて pyproject.toml
-          をエクスポート
+          Configuration to ignore ruff rules
         </p>
         <div class="mt-1 flex flex-col gap-1 text-xs text-gray-500 sm:mt-2 sm:flex-row sm:gap-3">
-          <span>v{version.version}</span>
+          <span>Ruff v{version.version}</span>
           <span class="hidden sm:inline">|</span>
-          <span>全{rules.length}ルール</span>
-          <span class="hidden sm:inline">|</span>
-          <span class="hidden sm:inline">取得: {new Date(version.fetchedAt).toLocaleDateString('ja-JP')}</span>
+          <span>{rules.length} rules</span>
         </div>
       </div>
     </header>
