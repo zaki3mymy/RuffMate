@@ -125,7 +125,6 @@ export default function ExamplePopover({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="max-h-96 overflow-auto">
-            <h3 className="mb-2 text-sm font-semibold text-gray-900">使用例</h3>
             <div className="prose prose-sm max-w-none">
               <ReactMarkdown
                 components={{
