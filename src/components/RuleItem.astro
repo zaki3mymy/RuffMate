@@ -1,5 +1,6 @@
 ---
 import RuleToggle from './RuleToggle.tsx'
+import ExamplePopover from './ExamplePopover.tsx'
 import type { RuffRule } from '../types/rules'
 
 interface Props {
@@ -33,7 +34,12 @@ const statusColors = {
         </span>
       </div>
 
-      <h3 class="font-medium text-gray-900 mb-1">{rule.name}</h3>
+      <h3 class="mb-1 flex items-center font-medium text-gray-900">
+        {rule.name}
+        {rule.example && (
+          <ExamplePopover client:load example={rule.example} ruleCode={rule.code} />
+        )}
+      </h3>
 
       <p class="text-sm text-gray-600 mb-2">{rule.summary}</p>
 
