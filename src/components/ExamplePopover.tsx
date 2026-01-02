@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
+import python from 'react-syntax-highlighter/dist/cjs/languages/prism/python'
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 interface ExamplePopoverProps {
@@ -16,6 +17,11 @@ export default function ExamplePopover({
   const [isMobile, setIsMobile] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // Pythonのみ登録してバンドルサイズを削減
+  useEffect(() => {
+    SyntaxHighlighter.registerLanguage('python', python)
+  }, [])
 
   // モバイル判定
   useEffect(() => {
@@ -112,7 +118,7 @@ export default function ExamplePopover({
       {showPopover && (
         <div
           ref={popoverRef}
-          className="absolute left-0 top-full z-50 mt-2 w-screen max-w-2xl rounded-lg border border-gray-200 bg-white p-4 shadow-xl md:left-auto md:right-0"
+          className="absolute right-0 top-full z-50 mt-2 w-96 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 bg-white p-4 shadow-xl"
           role="tooltip"
           onClick={(e) => e.stopPropagation()}
         >
