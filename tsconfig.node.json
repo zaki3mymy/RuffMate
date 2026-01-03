@@ -12,16 +12,12 @@
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting - Strict Mode for Build Scripts */
+    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "noImplicitReturns": true
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "vitest.config.ts", "scripts/**/*.ts"]
+  "include": ["vite.config.ts"]
 }

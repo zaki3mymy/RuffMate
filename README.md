@@ -1,136 +1,154 @@
-# RuffMate - Ruff Configuration Manager
+# RuffMate
 
-A web application for managing Ruff linter rule configurations with ease.
+**Ruffの設定を簡単に管理できるウェブアプリケーション**
 
-## Project Status
+🔗 [https://zaki3mymy.github.io/RuffMate/](https://zaki3mymy.github.io/RuffMate/)
 
-- ✅ **Phase 1 Complete** - Environment Setup & Foundation
-- ⏳ **Phase 2 Pending** - MVP Implementation
-- ⏳ **Phase 3 Pending** - Standard Features
-- ⏳ **Phase 4 Pending** - Complete Version
+## RuffMateとは？
 
-## Quick Start
+RuffMateは、Pythonのリンター・フォーマッター「Ruff」の設定ファイル（`pyproject.toml`）を簡単に作成できるウェブアプリケーションです。
 
-### Prerequisites
+### こんな悩みを解決します
 
-- Node.js 18+
-- npm 9+
+- **設定ファイルの作成が面倒**: 936個ものルールから必要なものを選ぶのは大変
+- **ルールの内容がわからない**: どのルールが何をチェックするのか調べるのに時間がかかる
+- **カテゴリやステータスで絞り込みたい**: 自分のプロジェクトに必要なルールだけを効率的に見つけたい
+- **設定の共有が難しい**: チーム内で統一された設定を簡単に共有したい
 
-### Installation
+RuffMateを使えば、ブラウザ上で直感的にルールを選択し、すぐに使える`pyproject.toml`を生成できます。
+
+## 主な機能
+
+### 1. ルールの検索・フィルタリング
+
+- **キーワード検索**: ルール名、コード、説明で検索
+- **カテゴリフィルタ**: Flake8、Pylint、Ruff固有ルールなどカテゴリで絞り込み
+- **ステータスフィルタ**: Stable、Preview、Deprecated、Removedでフィルタ
+
+### 2. ルールの有効/無効切り替え
+
+- トグルスイッチでルールを簡単にON/OFF
+- 設定は自動的にブラウザに保存される（localStorage）
+- 936個の全ルールに対応
+
+### 3. TOML設定ファイルのエクスポート
+
+- クリックひとつで`pyproject.toml`形式の設定を生成
+- クリップボードへのコピー、またはファイルダウンロードが可能
+- プレビュー画面で内容を確認してからエクスポート
+
+### 4. レスポンシブデザイン
+
+- デスクトップ、タブレット、モバイル対応
+- どのデバイスでも快適に操作可能
+
+## 使い方
+
+### 1. アプリにアクセス
+
+ブラウザで [https://zaki3mymy.github.io/RuffMate/](https://zaki3mymy.github.io/RuffMate/) を開きます。
+
+### 2. ルールを選択
+
+#### 検索で絞り込む
+
+検索ボックスにキーワードを入力すると、ルール名・コード・説明から該当するルールが表示されます。
+
+例: `unused` と入力すると、未使用の変数やインポートに関するルールが表示されます。
+
+#### カテゴリ・ステータスでフィルタ
+
+- **カテゴリボタン**: 特定のカテゴリ（例: `F` Flake8、`E` pycodestyle）のルールだけを表示
+- **ステータスボタン**: Stable、Preview、Deprecated、Removedで絞り込み
+
+複数選択も可能です。
+
+#### ルールの有効/無効を切り替え
+
+各ルールの右側にあるトグルスイッチをクリックすると、有効/無効を切り替えられます。
+
+- **有効（青色）**: そのルールを使う
+- **無効（灰色）**: そのルールを使わない
+
+設定は自動的に保存されるため、ページを再読み込みしても設定は残ります。
+
+### 3. 設定をエクスポート
+
+#### プレビュー
+
+画面右上の「エクスポート」ボタンをクリックすると、現在の設定に基づいた`pyproject.toml`のプレビューが表示されます。
+
+#### エクスポート方法
+
+プレビュー画面で、以下のいずれかを選択できます:
+
+- **クリップボードにコピー**: 設定をコピーして、エディタに貼り付け
+- **ファイルをダウンロード**: `pyproject.toml`ファイルとして直接ダウンロード
+
+### 4. プロジェクトで使用
+
+エクスポートした設定を、お使いのプロジェクトの`pyproject.toml`に追加してください。
 
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Build for production
-npm run build
+# Ruffを実行して設定を確認
+ruff check .
 ```
 
-## Development Scripts
+## 出力例
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server on port 3000 |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once |
-| `npm run test:coverage` | Run tests with coverage report |
-| `npm run test:e2e` | Run E2E tests with Playwright |
-| `npm run lint` | Lint code with ESLint |
-| `npm run lint:fix` | Fix linting errors |
-| `npm run format` | Format code with Prettier |
-| `npm run type-check` | Type check with TypeScript |
+RuffMateでは、以下のような`pyproject.toml`形式の設定を生成します:
 
-## Tech Stack
+```toml
+# Generated by RuffMate
+# https://zaki3mymy.github.io/RuffMate/
+# Ruff version: 0.8.4
+# Generated at: 2024-01-15T12:34:56.789Z
 
-### Core
-- **React 18** - UI library
-- **TypeScript 5.6** - Type safety (strict mode)
-- **Vite 6** - Build tool and dev server
+[tool.ruff]
+# 有効化するルール
+select = [
+    "F401",  # unused-import
+    "F841",  # unused-variable
+    "E501",  # line-too-long
+]
 
-### State Management
-- **Zustand** - Lightweight state management
-- **Immer** - Immutable state updates
-
-### UI/Styling
-- **Material-UI v6** - Component library
-- **Emotion** - CSS-in-JS
-
-### Testing
-- **Vitest** - Unit testing (100% coverage target)
-- **Testing Library** - React component testing
-- **Playwright** - E2E testing
-
-### Code Quality
-- **ESLint** - Linting
-- **Prettier** - Code formatting
-- **TypeScript strict mode** - Maximum type safety
-
-## Project Structure
-
-```
-RuffMate/
-├── src/
-│   ├── components/     # React components
-│   ├── services/       # Business logic
-│   ├── store/          # Zustand stores
-│   ├── hooks/          # Custom React hooks
-│   ├── types/          # TypeScript types
-│   ├── utils/          # Utility functions
-│   ├── styles/         # MUI themes and styles
-│   └── assets/         # Static assets
-├── tests/
-│   ├── e2e/           # E2E tests
-│   ├── fixtures/      # Test data
-│   ├── helpers/       # Test utilities
-│   └── __mocks__/     # Mocks
-├── scripts/           # Build scripts (TypeScript)
-└── docs/              # Documentation
+# 無効化するルール
+ignore = [
+    "E203",  # whitespace-before-punctuation
+    "W503",  # line-break-before-binary-operator
+]
 ```
 
-## Documentation
+## よくある質問
 
-- 📋 [Requirements](docs/REQUIREMENTS.md) - Complete project requirements
-- 🏗️ [Architecture](docs/ARCHITECTURE.md) - System design and architecture
-- 📅 [Development Plan](docs/DEVELOPMENT_PLAN.md) - Phased development roadmap
-- 🧪 [Testing Strategy](docs/TESTING_STRATEGY.md) - 100% coverage test plan
+### Q: 設定は保存されますか？
 
-## Development Guidelines
+A: はい。ブラウザのlocalStorageに自動保存されます。同じブラウザであれば、ページを閉じても設定は残ります。
 
-### TypeScript
-- Strict mode is **mandatory**
-- No `any` types allowed
-- All functions must have proper return types
+### Q: すべてのルールを一度に有効/無効にできますか？
 
-### Testing
-- **TDD approach**: Write tests first
-- **100% coverage required**: All branches, functions, lines
-- Tests must pass before committing
+A: 現在は個別に切り替える必要があります。フィルタ機能を使って必要なルールだけを表示すると効率的です。
 
-### Code Style
-- Run `npm run format` before committing
-- Run `npm run lint` to check for issues
-- All ESLint rules must pass
+### Q: 設定を共有するには？
 
-### Git Workflow
-- Create feature branches from `main`
-- Use conventional commit messages
-- All commits include Claude Code attribution
+A: エクスポートした`pyproject.toml`ファイルをGitなどでバージョン管理し、チームで共有してください。
 
-## License
+### Q: Ruffのバージョンは？
 
-MIT
+A: 画面上部にRuffのバージョンが表示されます。アプリはビルド時に最新のRuffルール情報を取得します。
 
-## Credits
+## 技術情報
 
-Built with [Claude Code](https://claude.com/claude-code)
+開発者向けの技術情報は、[docs/](./docs/) フォルダを参照してください。
+
+- アーキテクチャ: [docs/architecture.md](./docs/architecture.md)
+- 開発ガイド: [docs/development.md](./docs/development.md)
+- デプロイガイド: [docs/deployment.md](./docs/deployment.md)
+
+## ライセンス
+
+MIT License
+
+## フィードバック
+
+バグ報告や機能リクエストは、[GitHub Issues](https://github.com/zaki3mymy/RuffMate/issues) までお願いします。
