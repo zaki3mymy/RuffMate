@@ -8,6 +8,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  site: 'https://zaki3mymy.github.io',
   base: '/RuffMate/',
   output: 'static',
 })
