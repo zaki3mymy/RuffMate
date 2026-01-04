@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { type FilterResult } from '../utils/filterRules'
 import { filterState } from '../utils/filterState'
 
@@ -6,6 +6,7 @@ export default function SearchBar() {
   const [searchTerm, setSearchTerm] = useState('')
   const [resultCount, setResultCount] = useState<number | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleFilterComplete = (e: Event) => {
@@ -17,6 +18,29 @@ export default function SearchBar() {
     window.addEventListener('filter-complete', handleFilterComplete)
     return () =>
       window.removeEventListener('filter-complete', handleFilterComplete)
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // スラッシュキーが押された場合
+      if (e.key === '/') {
+        // すでにinputやtextarea要素にフォーカスがある場合は無視
+        const activeElement = document.activeElement
+        if (
+          activeElement instanceof HTMLInputElement ||
+          activeElement instanceof HTMLTextAreaElement
+        ) {
+          return
+        }
+
+        // 検索ボックスにフォーカス
+        e.preventDefault() // デフォルトの '/' 入力を防ぐ
+        inputRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
   const handleSearch = (value: string) => {
@@ -33,6 +57,7 @@ export default function SearchBar() {
     <div className="flex items-center gap-4 p-4">
       <div className="relative flex-1">
         <input
+          ref={inputRef}
           type="text"
           value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
