@@ -4,7 +4,7 @@ import { ruleSettingsStore } from '../src/utils/ruleSettings'
 describe('RuleSettingsStore', () => {
   beforeEach(() => {
     // 各テストの前にキャッシュをクリア
-    ruleSettingsStore.clearCache()
+    ruleSettingsStore.clearAll()
     localStorage.clear()
   })
 
@@ -38,7 +38,7 @@ describe('RuleSettingsStore', () => {
     })
 
     it('キャッシュになくlocalStorageにある場合はlocalStorageから読む', () => {
-      ruleSettingsStore.clearCache()
+      ruleSettingsStore.clearAll()
       localStorage.setItem(
         'rule-E501',
         JSON.stringify({ enabled: false, comment: 'stored' })
@@ -53,7 +53,7 @@ describe('RuleSettingsStore', () => {
     })
 
     it('キャッシュにもlocalStorageにもない場合はデフォルト値を返す', () => {
-      ruleSettingsStore.clearCache()
+      ruleSettingsStore.clearAll()
       localStorage.removeItem('rule-E501')
 
       const result = ruleSettingsStore.getSyncWithStorage('E501')
@@ -61,7 +61,7 @@ describe('RuleSettingsStore', () => {
     })
 
     it('localStorageの読み込みエラー時はデフォルト値を返す', () => {
-      ruleSettingsStore.clearCache()
+      ruleSettingsStore.clearAll()
       localStorage.setItem('rule-E501', 'invalid json')
 
       const consoleErrorSpy = vi
