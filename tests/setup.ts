@@ -36,11 +36,11 @@ beforeEach(() => {
   }
 
   // ruleSettingsStoreのキャッシュをクリア
-  ruleSettingsStore.clearCache()
+  ruleSettingsStore.clearAll()
 })
 
 afterEach(() => {
   global.localStorage.clear()
-  ruleSettingsStore.clearCache()
+  ruleSettingsStore.clearAll()
   vi.clearAllMocks()
 })

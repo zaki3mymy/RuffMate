@@ -41,7 +41,7 @@ describe('exportToml', () => {
 
   beforeEach(() => {
     // 各テストの前にキャッシュをクリア
-    ruleSettingsStore.clearCache()
+    ruleSettingsStore.clearAll()
   })
 
   describe('getDisabledRules', () => {
